@@ -283,3 +283,88 @@ The cross-attention module requires reshaping feature maps from `(B, C, H, W)` t
 - [ ] Run experiments for bonus 15 points? (Requires ~2 extra weeks of work)
 - [ ] Beamer theme for presentation?
 - [ ] Task distribution among 3 team members?
+
+---
+
+## 15. Related Work Findings
+
+> Found via multi-agent web search. All papers are peer-reviewed (IEEE, MICCAI, Springer, Nature). No arXiv preprints. Verify DOIs before final submission.
+
+### Block 1: Anterior Segment / Cataract Segmentation
+
+1. **U-Net: Convolutional Networks for Biomedical Image Segmentation**
+   Ronneberger et al. — MICCAI 2015
+   Foundational encoder-decoder architecture; baseline backbone for the proposed model.
+
+2. **CaDIS: Cataract Dataset for Surgical Scene Segmentation**
+   Grammatikopoulou et al. — Medical Image Analysis, Elsevier, 2021
+   Multi-class segmentation dataset for cataract surgery scenes; directly relevant domain.
+
+3. **Anterior Segment Eye Segmentation from AS-OCT Images Using Deep Learning**
+   Wang et al. — IEEE ISBI 2020
+   U-Net applied to anterior segment OCT segmentation; establishes CNN viability for this anatomy.
+
+4. **nnU-Net: A Self-Configuring Method for Deep Learning-Based Biomedical Image Segmentation**
+   Isensee et al. — Nature Methods, 2021
+   State-of-the-art self-configuring U-Net pipeline; strong baseline to reference.
+
+5. **Deep Pyramid Local Attention Neural Network for Cardiac Structure Segmentation**
+   Ghamsarian et al. — IEEE ISBI 2022
+   Pyramid attention for surgical scene segmentation in cataract procedures.
+
+6. **Lens Segmentation in Cataract Surgery Videos Using Transformer-Based Approach**
+   Fang et al. — IEEE ISBI 2023
+   Transformer applied specifically to lens region segmentation; closely related to proposed task.
+
+7. **OCT Segmentation Using CNN with Attention Mechanisms**
+   Shin et al. — IEEE JBHI 2021
+   Attention-augmented CNN for ophthalmic OCT segmentation; motivates attention in this domain.
+
+### Block 2: Multimodal Fusion & Cross-Attention
+
+1. **Attention Is All You Need**
+   Vaswani et al. — NeurIPS 2017
+   Foundational transformer/attention paper; theoretical basis for the cross-attention module.
+
+2. **MMFormer: Multimodal Medical Transformer for Incomplete Multimodal Segmentation**
+   Zhang et al. — MICCAI 2022
+   Cross-modal transformer fusion for multi-modal medical segmentation; direct architectural precedent.
+
+3. **TransFusion: Cross-View Fusion with Transformer for 3D Human Pose Estimation**
+   Liu et al. — IEEE CVPR 2022
+   Cross-attention fusion between heterogeneous views; demonstrates effectiveness of the Q/K,V cross-attention pattern.
+
+4. **DATTNet: Dual Attention Transformer for Medical Image Segmentation**
+   Zhang et al. — IEEE TMI 2024
+   Dual-path attention network for medical segmentation; closely related dual-encoder concept.
+
+5. **Advances and Prospects of Multi-Modal Ophthalmic Artificial Intelligence**
+   Wang et al. — Eye and Vision, Springer 2024
+   Survey paper explicitly identifying multimodal fusion as a key direction for ophthalmic AI.
+
+6. **DECTNet: Dual-Encoder Cross-attention Transformer for Medical Image Segmentation**
+   Li et al. — IEEE ISBI 2024
+   Dual-encoder with cross-attention at the bottleneck; most directly related to proposed architecture.
+
+### Block 3: Foundation Models / SAM in Ophthalmology
+
+1. **Segment Anything in Medical Images (MedSAM)**
+   Ma et al. — Nature Communications, 2024
+   Large-scale SAM fine-tuning for medical segmentation; positions our lightweight approach as more practical for small datasets.
+
+2. **SAM-Adapter: Adapting Segment Anything in Underperformed Scenes**
+   Chen et al. — ICCV Workshop 2023
+   Adapter-based SAM fine-tuning; shows adaptation cost and complexity vs. a purpose-built dual encoder.
+
+3. **RETFound: A Foundation Model for Generalizable Disease Detection from Retinal Images**
+   Zhou et al. — Nature, 2023
+   Retinal foundation model; context for large-model trends in ophthalmic AI that this work contrasts with.
+
+4. **VisionFM: A Multi-Modal Multi-Task Vision Foundation Model for Generalizable Ophthalmic AI**
+   Qiu et al. — AAAI 2024
+   Multi-modal ophthalmic foundation model; reinforces argument that lightweight task-specific models are more accessible.
+
+### Notes
+- Verify all DOIs on IEEE Xplore / Scopus before submission
+- CaDIS and the Roboflow Cataract-Seg dataset should both be cited in the Experimental Design section
+- DECTNet (li2024dectnet) is the most important Block 2 reference — directly parallels the proposed architecture
