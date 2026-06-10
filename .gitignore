@@ -1,0 +1,5 @@
+.env
+
+# LaTeX outputs
+paper/out/
+.DS_Store
