@@ -1,4 +1,5 @@
 import os
+import json
 import cv2
 import numpy as np
 import torch
@@ -40,14 +41,27 @@ def canny_edge_map(img_tensor: torch.Tensor, t1: int = 50, t2: int = 150) -> tor
     return torch.from_numpy(edges).unsqueeze(0).repeat(3, 1, 1)
 
 
-## @brief PyTorch Dataset for the Roboflow Cataract-Seg dataset.
+## @brief Rasterizes COCO polygon segmentation annotations into a binary mask.
+#  @param annotations  List of COCO annotation dicts for one image.
+#  @param height       Image height in pixels.
+#  @param width        Image width in pixels.
+#  @return Binary mask (H, W) as float32.
+def rasterize_masks(annotations: list, height: int, width: int) -> np.ndarray:
+    mask = np.zeros((height, width), dtype=np.float32)
+    for ann in annotations:
+        for seg in ann.get("segmentation", []):
+            pts = np.array(seg, dtype=np.int32).reshape(-1, 2)
+            cv2.fillPoly(mask, [pts], 1.0)
+    return mask
+
+
+## @brief PyTorch Dataset for the Roboflow Cataract-Seg dataset (COCO segmentation format).
 #
-#  Expects the dataset downloaded in Semantic Segmentation (PNG masks) format:
+#  Expects the dataset downloaded with format 'coco-segmentation':
 #    <data_root>/{train,valid,test}/images/*.jpg
-#    <data_root>/{train,valid,test}/masks/*.png
+#    <data_root>/{train,valid,test}/_annotations.coco.json
 #
-#  Returns (rgb, edge, mask) tuples. Baselines that don't use the edge stream
-#  can simply ignore it.
+#  Returns (rgb, edge, mask) tuples.
 #
 #  @param data_root Path to the dataset root directory.
 #  @param split     One of 'train', 'valid', 'test'.
@@ -58,29 +72,39 @@ class CataractSegDataset(Dataset):
     def __init__(self, data_root: str, split: str, img_size: int = 512,
                  canny_t1: int = 50, canny_t2: int = 150):
         self.img_dir   = os.path.join(data_root, split, "images")
-        self.mask_dir  = os.path.join(data_root, split, "masks")
         self.transform = get_transforms(img_size, split)
         self.canny_t1  = canny_t1
         self.canny_t2  = canny_t2
-        self.ids       = sorted([
-            f for f in os.listdir(self.img_dir)
-            if f.lower().endswith((".jpg", ".jpeg", ".png"))
-        ])
+
+        ann_path = os.path.join(data_root, split, "_annotations.coco.json")
+        with open(ann_path) as f:
+            coco = json.load(f)
+
+        # Build id → file_name map and id → annotations map
+        self.images = {img["id"]: img for img in coco["images"]}
+        self.anns_by_image: dict[int, list] = {img["id"]: [] for img in coco["images"]}
+        for ann in coco["annotations"]:
+            self.anns_by_image[ann["image_id"]].append(ann)
+
+        self.image_ids = list(self.images.keys())
 
     def __len__(self) -> int:
-        return len(self.ids)
+        return len(self.image_ids)
 
     def __getitem__(self, idx: int):
-        name  = os.path.splitext(self.ids[idx])[0]
-        img   = cv2.cvtColor(cv2.imread(os.path.join(self.img_dir, self.ids[idx])),
-                              cv2.COLOR_BGR2RGB)
-        mask_path = os.path.join(self.mask_dir, name + ".png")
-        mask  = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
-        mask  = (mask > 0).astype(np.float32)
+        img_id   = self.image_ids[idx]
+        img_info = self.images[img_id]
+        img_path = os.path.join(self.img_dir, img_info["file_name"])
+
+        img  = cv2.cvtColor(cv2.imread(img_path), cv2.COLOR_BGR2RGB)
+        mask = rasterize_masks(
+            self.anns_by_image[img_id],
+            img_info["height"], img_info["width"]
+        )
 
         augmented = self.transform(image=img, mask=mask)
-        rgb  = augmented["image"].float()          # (3, H, W)
-        mask = augmented["mask"].unsqueeze(0).float()  # (1, H, W)
+        rgb  = augmented["image"].float()               # (3, H, W)
+        mask = augmented["mask"].unsqueeze(0).float()   # (1, H, W)
         edge = canny_edge_map(rgb, self.canny_t1, self.canny_t2)  # (3, H, W)
 
         return rgb, edge, mask
