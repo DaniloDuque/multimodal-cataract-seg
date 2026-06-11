@@ -71,7 +71,6 @@ def rasterize_masks(annotations: list, height: int, width: int) -> np.ndarray:
 class CataractSegDataset(Dataset):
     def __init__(self, data_root: str, split: str, img_size: int = 512,
                  canny_t1: int = 50, canny_t2: int = 150):
-        self.img_dir   = os.path.join(data_root, split, "images")
         self.transform = get_transforms(img_size, split)
         self.canny_t1  = canny_t1
         self.canny_t2  = canny_t2
@@ -79,6 +78,11 @@ class CataractSegDataset(Dataset):
         ann_path = os.path.join(data_root, split, "_annotations.coco.json")
         with open(ann_path) as f:
             coco = json.load(f)
+
+        # Determine where images actually live
+        split_dir = os.path.join(data_root, split)
+        img_subdir = os.path.join(split_dir, "images")
+        self.img_dir = img_subdir if os.path.isdir(img_subdir) else split_dir
 
         # Build id → file_name map and id → annotations map
         self.images = {img["id"]: img for img in coco["images"]}
@@ -94,7 +98,8 @@ class CataractSegDataset(Dataset):
     def __getitem__(self, idx: int):
         img_id   = self.image_ids[idx]
         img_info = self.images[img_id]
-        img_path = os.path.join(self.img_dir, img_info["file_name"])
+        file_name = os.path.basename(img_info["file_name"])
+        img_path = os.path.join(self.img_dir, file_name)
 
         img  = cv2.cvtColor(cv2.imread(img_path), cv2.COLOR_BGR2RGB)
         mask = rasterize_masks(
