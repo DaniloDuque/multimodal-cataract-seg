@@ -1,10 +1,10 @@
 # SPEC: Multimodal Cataract Segmentation via Cross-Modal Attention
-**Version:** 1.0  
-**Course:** Neural Networks — PARMA Group, Instituto Tecnológico de Costa Rica  
-**Assignment:** Investigación Corta (short research paper + presentation)  
-**Due:** Week 17 (Wednesday)  
-**Team size:** 3 people  
-**Language:** English  
+**Version:** 2.0
+**Course:** Neural Networks — PARMA Group, Instituto Tecnológico de Costa Rica
+**Assignment:** Investigación Corta (short research paper + presentation)
+**Due:** Week 17 (Wednesday)
+**Team size:** 3 people
+**Language:** English
 
 ---
 
@@ -39,15 +39,18 @@ Unimodal segmentation of anterior segment structures (cornea, pupil, lens) in ca
 ### Proposed Solution
 A dual-encoder architecture where:
 - **Encoder A** processes the original **RGB image** (color + texture features)
-- **Encoder B** processes a **derived structural map** (edge map via Canny or Sobel filter) from the same image
+- **Encoder B** processes a **derived structural map** (Canny edge map) from the same image
 
 Both encoders run in parallel. A **cross-attention module** at the bottleneck allows Encoder A's features to query Encoder B's features — enriching the RGB representation with explicit structural/geometric information before passing to the decoder.
 
 ### Why "Multimodal"
-Although both inputs come from the same image, they represent **heterogeneous feature spaces** (photometric vs. geometric), which qualifies as multimodal fusion in the architectural sense — consistent with the research topic.
+Although both inputs come from the same image, they represent **heterogeneous feature spaces** (photometric vs. geometric), which qualifies as multimodal fusion in the architectural sense.
 
-### Clinical Justification
-In cataract images, structural boundaries of the lens are clinically relevant for segmentation. A network that explicitly models both color and edge structure is better equipped to delineate these boundaries, especially under variable imaging conditions.
+### Backbone Decision
+**U-Net** — chosen for implementation tractability and literature support. SegFormer is left as future work.
+
+### Edge Map Decision
+**Canny** with t1=50, t2=150 — chosen for simplicity. Learnable Sobel is left as future work.
 
 ---
 
@@ -59,169 +62,213 @@ Input Image (RGB)
        ├──────────────────────────────────┐
        │                                  │
        ▼                                  ▼
-  Canny/Sobel filter             Encoder A (RGB)
-       │                          (U-Net or SegFormer backbone)
+  Canny filter (t1=50, t2=150)     Encoder A (U-Net, RGB)
+       │                            64→128→256→512 channels
        ▼                                  │
-  Encoder B (Edge map)                    │
-  (same or lighter backbone)              │
+  Encoder B (U-Net, Edge map)             │
+  (same architecture, no shared weights)  │
        │                                  │
        └──────────┐          ┌────────────┘
                   ▼          ▼
-            Cross-Attention Module
-            Q ← Encoder A features
-            K, V ← Encoder B features
+         Cross-Attention Module (bottleneck)
+         Q ← F_A  (B, 1024, 512)
+         K, V ← F_B  (B, 1024, 512)
+         n_heads = 8
                   │
                   ▼
-              Decoder
+     Decoder (expanding path, skip connections from Encoder A)
                   │
                   ▼
-          Segmentation Mask
+         Segmentation Mask  (sigmoid output)
 ```
 
-**Backbone options (pick one):**
-- U-Net (simpler, more literature, easier to modify)
-- SegFormer (more modern, transformer-based, slightly more complex)
-
-**Recommendation:** U-Net for implementation tractability; mention SegFormer as future work.
-
-**Cross-attention:** Use PyTorch's `nn.MultiheadAttention` — do NOT implement from scratch. Connect at the bottleneck (deepest feature map level).
+**Key implementation note:** Reshape bottleneck features from `(B, C, H, W)` → `(B, H*W, C)` before `nn.MultiheadAttention`, reshape back after.
 
 ---
 
 ## 6. Paper Structure (IEEE LaTeX)
 
-Write sections in this order (not the order they appear in the paper):
+### Status
 
-### Writing order:
-1. **Related Work** — write first, directly from papers found
-2. **Proposed Method** — describe the architecture above
-3. **Experimental Design** — dataset, splits, metrics, baselines
-4. **Introduction** — write after everything else; summarize motivation + contributions
-5. **Abstract** — write last
+| Section | File | Status |
+|---------|------|--------|
+| Abstract | `main.tex` | ✅ Written |
+| Introduction | `sections/introduction.tex` | ⬜ TODO |
+| Related Work | `sections/related_work.tex` | ✅ Written |
+| Proposed Method | `sections/method.tex` | ✅ Written |
+| Experimental Design | `sections/experimental_design.tex` | ✅ Written |
+| Results | `sections/results.tex` | ⬜ Requires experiments |
+| Conclusion | `sections/conclusion.tex` | ⬜ TODO |
 
-### Final paper order:
+### Final paper order
 1. Abstract
 2. Introduction
 3. Related Work
 4. Proposed Method
 5. Experimental Design
-6. Results (if running experiments for bonus points)
+6. Results (bonus)
 7. Conclusion
 8. References
 
 ---
 
-## 7. Related Work — Three Blocks
+## 7. References in Use
 
-### Block 1: Anterior Segment / Cataract Segmentation
-Search terms: `cataract segmentation deep learning`, `anterior segment segmentation CNN`, `lens segmentation ophthalmic`
+> All verified peer-reviewed. No arXiv preprints. DOIs confirmed.
 
-Key papers to find (search IEEE Xplore / Scopus):
-- U-Net applied to retinal/anterior segment segmentation (2020–2025)
-- nnU-Net for medical image segmentation
-- Papers specifically on cataract or lens region segmentation
+| Key | Paper | Venue | Year |
+|-----|-------|-------|------|
+| `cataractseg2023roboflow` | Cataract-Seg Dataset — Muhammad Risma | Roboflow Universe | 2023 |
+| `ronneberger2015unet` | U-Net — Ronneberger et al. | MICCAI | 2015 |
+| `grammatikopoulou2021cadis` | CaDIS — Grammatikopoulou et al. | Medical Image Analysis | 2021 |
+| `vaswani2017attention` | Attention Is All You Need — Vaswani et al. | NeurIPS | 2017 |
+| `zhang2022mmformer` | mmFormer — Zhang et al. | MICCAI | 2022 |
+| `li2024dectnet` | DECTNet — Li et al. | PLOS ONE | 2024 |
+| `wang2024multimodal` | Multi-modal ophthalmic AI survey — Wang et al. | Eye and Vision | 2024 |
+| `ma2024medsam` | MedSAM — Ma et al. | Nature Communications | 2024 |
+| `chen2023samadapter` | SAM-Adapter — Chen et al. | ICCV Workshop | 2023 |
 
-### Block 2: Multimodal Fusion in Medical Imaging
-Search terms: `multimodal feature fusion medical image segmentation`, `cross-modal attention medical imaging`, `dual encoder segmentation`
-
-Key papers to find:
-- Cross-attention fusion architectures in medical imaging
-- Early vs late vs hybrid fusion comparisons
-- Multimodal ophthalmic deep learning (review papers)
-
-Notable reference to find: *"Advances and prospects of multi-modal ophthalmic AI"* — Eye and Vision, Springer (2024)
-
-### Block 3: SAM and Foundation Model Adaptation (for context/contrast)
-Search terms: `SAM adapter medical segmentation`, `segment anything ophthalmology`, `MedSAM`
-
-Key papers to find:
-- MedSAM (Ma et al., Nature Communications, 2024)
-- EyeSAM — ARVO 2024
-- Learnable Ophthalmology SAM
-
-> **Note:** This block positions your work relative to the foundation model trend, arguing that lightweight dual-encoder fusion is more practical for small datasets like the one available.
+### Removed references (and why)
+| Removed | Reason |
+|---------|--------|
+| nnU-Net (Isensee 2021) | Not a baseline in experiments; no distinct argument |
+| DeepPyram (Ghamsarian 2022) | Motivation link to proposed work was a stretch |
+| DATTNet (Zhang 2024) | Different concept (dual attention heads ≠ dual encoders); redundant with DECTNet |
+| RETFound (Zhou 2023) | Wrong task (detection) and wrong anatomy (fundus) |
+| VisionFM (Qiu 2024) | Redundant with MedSAM for the same argument |
 
 ---
 
 ## 8. Experimental Design
 
 ### Dataset
-- **Source:** https://universe.roboflow.com/muhammad-risma/cataract-seg/dataset/1
-- **Task:** Semantic segmentation of cataract-related anterior segment structures
-- **Split:** 70% train / 15% val / 15% test (or use provided split if available)
+- **Source:** Roboflow Cataract-Seg (`cataractseg2023roboflow`)
+- **Split:** 70% train / 15% val / 15% test (stratified)
 
 ### Preprocessing
-- Resize all images to 512×512
+- Resize to 512×512
 - Normalize RGB to [0,1]
-- Generate edge map: `cv2.Canny(image, threshold1=50, threshold2=150)` or Sobel
-- Data augmentation: horizontal flip, rotation ±15°, brightness/contrast jitter
+- Edge map: `cv2.Canny(gray, 50, 150)`, replicated to 3 channels
 
-### Baselines to Compare
+### Augmentation (train only)
+- Horizontal flip (p=0.5)
+- Rotation ±15°
+- Brightness/contrast jitter (factor [0.8, 1.2])
+- Edge map recomputed after geometric transforms
+
+### Baselines
 | Model | Description |
 |-------|-------------|
-| U-Net (unimodal RGB) | Standard baseline |
-| U-Net (unimodal Edge) | Edge-only input |
-| U-Net (early fusion) | RGB + Edge concatenated at input |
-| **Proposed (cross-attention)** | Dual encoder + cross-attention |
+| U-Net (RGB) | Single encoder, RGB only |
+| U-Net (Edge) | Single encoder, edge map only |
+| U-Net (Early Fusion) | Single encoder, RGB+Edge concatenated at input |
+| **Proposed** | Dual encoder + bottleneck cross-attention |
 
 ### Metrics
-- **IoU (Intersection over Union)** — primary metric
-- **Dice coefficient** — standard for medical segmentation
-- **F1 score** — per class if multi-class
+- **IoU** — primary
+- **Dice coefficient**
+- **F1** (per class if multi-class)
 
-### Tools
-- `segmentation-models-pytorch` for U-Net backbone
-- `torchmetrics` for IoU and Dice
-- `opencv-python` for Canny/Sobel
-- `torch.nn.MultiheadAttention` for cross-attention module
+### Hyperparameters
+- Optimizer: AdamW, lr=1e-4, weight_decay=1e-2
+- Batch size: 8
+- Epochs: 100
+- Loss: BCE + Dice
+- Cross-attention heads: 8
+- Bottleneck embed dim: 512
 
 ---
 
 ## 9. Implementation Plan
 
-### Files to produce
+### Project structure
 ```
 project/
+├── experiment.ipynb        # Orchestration notebook (runs all steps in order)
 ├── data/
-│   └── dataset.py          # DataLoader, augmentations, edge map generation
+│   └── dataset.py          # CataractSegDataset, augmentations, edge map generation
 ├── models/
-│   ├── unet_baseline.py    # Standard U-Net (unimodal)
-│   ├── cross_attention.py  # nn.MultiheadAttention wrapper module
-│   └── dual_encoder.py     # Full proposed architecture
-├── train.py                # Training loop
-├── evaluate.py             # Metrics computation
-└── config.py               # Hyperparameters
+│   ├── unet_baseline.py    # Standard U-Net (unimodal, works for RGB, Edge, Early Fusion)
+│   ├── cross_attention.py  # CrossAttentionFusion module (reshape → MHA → reshape)
+│   └── dual_encoder.py     # Full proposed model (calls unet_baseline + cross_attention)
+├── train.py                # train_one_epoch(), validate() functions
+├── evaluate.py             # compute_metrics() — IoU, Dice, F1 via torchmetrics
+└── config.py               # Single CONFIG dict with all hyperparameters
 ```
 
-### Key implementation challenge
-The cross-attention module requires reshaping feature maps from `(B, C, H, W)` to sequence format `(B, H*W, C)` before passing to `nn.MultiheadAttention`, then reshaping back. This is the main non-trivial step.
+### experiment.ipynb — cell structure
+```
+[1] Install / import dependencies
+[2] Load config (from config.py)
+[3] Build datasets and dataloaders (from data/dataset.py)
+[4] Train baseline: U-Net RGB        → save checkpoint
+[5] Train baseline: U-Net Edge       → save checkpoint
+[6] Train baseline: U-Net Early Fusion → save checkpoint
+[7] Train proposed: Dual Encoder     → save checkpoint
+[8] Evaluate all 4 models on test set → metrics table
+[9] Plot: loss curves, IoU curves, sample predictions side-by-side
+[10] Print final results table (IoU / Dice / F1 per model)
+```
 
-### Suggested hyperparameters
-- Optimizer: AdamW, lr=1e-4
-- Batch size: 8–16
-- Epochs: 50–100
-- Loss: BCE + Dice combined
-- Cross-attention heads: 4 or 8
-- Embed dim: match bottleneck channel count of U-Net (512 for standard U-Net)
+### Key implementation notes
+
+**dataset.py**
+- `CataractSegDataset.__getitem__` returns `(rgb, edge, mask)` always; baselines just ignore the edge or concatenate it
+- Edge map recomputed after geometric augmentations, not stored on disk
+
+**unet_baseline.py**
+- Accepts `in_channels` parameter: 3 for RGB/Edge, 6 for Early Fusion
+- Returns `(bottleneck_features, skip_connections, logits)` so `dual_encoder.py` can reuse the encoder
+
+**cross_attention.py**
+```python
+# Core logic:
+# x_rgb: (B, C, H, W)  →  (B, H*W, C)  →  Q
+# x_edge: (B, C, H, W) →  (B, H*W, C)  →  K, V
+# out = nn.MultiheadAttention(embed_dim=C, num_heads=8)(Q, K, V)
+# out: (B, H*W, C)  →  (B, C, H, W)
+```
+
+**config.py**
+```python
+CONFIG = {
+    "img_size": 512,
+    "batch_size": 8,
+    "epochs": 100,
+    "lr": 1e-4,
+    "weight_decay": 1e-2,
+    "canny_t1": 50,
+    "canny_t2": 150,
+    "n_heads": 8,
+    "embed_dim": 512,
+    "device": "cuda" if torch.cuda.is_available() else "cpu",
+    "data_root": "data/cataract-seg",
+    "checkpoints_dir": "checkpoints/",
+}
+```
+
+### Dependencies
+```
+torch
+segmentation-models-pytorch
+torchmetrics
+opencv-python
+albumentations
+matplotlib
+```
 
 ---
 
-## 10. Presentation Requirements (from assignment doc)
+## 10. Presentation Requirements
 
 - Duration: 20 minutes, all members participate equally
 - Font size: 18–24pt, sans-serif
-- Numbered slides
-- Intro slide with section outline
-- Clearly distinguishable sections
-- Bullets/numbering per slide
-- Figures numbered with caption and source
-- IEEE citation format
-- Adequate color contrast
+- Numbered slides, IEEE citation format
 
 ### Suggested slide structure (≈15–18 slides)
 1. Title + authors
 2. Outline
-3. Problem motivation (why cataract segmentation matters)
+3. Problem motivation
 4. Limitations of unimodal approaches
 5. What is multimodal segmentation?
 6. Related Work — Block 1 (cataract segmentation)
@@ -231,140 +278,24 @@ The cross-attention module requires reshaping feature maps from `(B, C, H, W)` t
 10. Cross-attention explanation
 11. Dataset description
 12. Experimental setup + baselines
-13. Results table (or expected results if not running experiments)
+13. Results table
 14. Discussion
 15. Conclusions + future work
 16. References
 
 ---
 
-## 11. Possible Citations (to verify and find full references)
+## 11. LaTeX Setup
 
-> All citations must come from IEEE Xplore, Scopus, or peer-reviewed conference/journal proceedings. No arXiv preprints. Dates: 2020–2025.
-
-| Paper | Where to find | Why cite |
-|-------|--------------|----------|
-| Ronneberger et al. — U-Net (2015) | MICCAI | Backbone baseline |
-| Ma et al. — MedSAM (2024) | Nature Communications | Foundation model context |
-| "Advances in multi-modal ophthalmic AI" — Eye and Vision (2024) | Springer | Multimodal ophthalmology survey |
-| "Machine Learning for Cataract Classification/Grading" survey | Machine Intelligence Research, Springer (2022) | Identifies multimodality as future direction |
-| Vaswani et al. — Attention is All You Need (2017) | NeurIPS | Cross-attention theoretical basis |
-| Any cross-attention fusion paper in medical imaging (2021–2025) | IEEE TMI / MICCAI | Direct architectural precedent |
-| Any anterior segment segmentation paper (2020–2025) | IEEE ISBI / MICCAI | Block 1 related work |
-| EyeSAM — ARVO 2024 | IOVS journal | SAM in ophthalmology |
+- **Template:** `\documentclass[conference]{IEEEtran}`
+- **Build:** `pdflatex → bibtex → pdflatex → pdflatex`, output to `paper/out/`
+- **Bibliography:** BibTeX, `\bibliographystyle{IEEEtran}`, source in `paper/refs.bib`
+- **Extra package added:** `\usepackage{amssymb}` (required for `\mathbb{R}`)
 
 ---
 
-## 12. LaTeX Setup
+## 12. Open Questions / Decisions Pending
 
-- **Template:** IEEE conference format (`\documentclass[conference]{IEEEtran}`)
-- **Recommended editor:** Overleaf (collaborative, no local setup)
-- **Presentation template:** Beamer — browse https://www.overleaf.com/gallery/tagged/presentation
-- **Bibliography:** BibTeX with IEEE style (`\bibliographystyle{IEEEtran}`)
-
----
-
-## 13. Timeline
-
-| Week | Task |
-|------|------|
-| Now | Find and read 8–12 papers for state of the art |
-| +1 week | Define architecture in detail, write Related Work + Method sections |
-| +2 weeks | Write Introduction + Experimental Design; start code if going for bonus |
-| +3 weeks | Run experiments (bonus), write Results + Conclusion |
-| Final week | Build presentation, rehearse |
-
----
-
-## 14. Open Questions / Decisions Pending
-
-- [ ] Which backbone: U-Net or SegFormer?
-- [ ] Edge map method: Canny (simpler) or Sobel (differentiable, could be learned)?
-- [ ] Run experiments for bonus 15 points? (Requires ~2 extra weeks of work)
+- [ ] Run experiments for bonus 15 points? (requires GPU + ~2 weeks)
 - [ ] Beamer theme for presentation?
 - [ ] Task distribution among 3 team members?
-
----
-
-## 15. Related Work Findings
-
-> Found via multi-agent web search. All papers are peer-reviewed (IEEE, MICCAI, Springer, Nature). No arXiv preprints. Verify DOIs before final submission.
-
-### Block 1: Anterior Segment / Cataract Segmentation
-
-1. **U-Net: Convolutional Networks for Biomedical Image Segmentation**
-   Ronneberger et al. — MICCAI 2015
-   Foundational encoder-decoder architecture; baseline backbone for the proposed model.
-
-2. **CaDIS: Cataract Dataset for Surgical Scene Segmentation**
-   Grammatikopoulou et al. — Medical Image Analysis, Elsevier, 2021
-   Multi-class segmentation dataset for cataract surgery scenes; directly relevant domain.
-
-3. **Anterior Segment Eye Segmentation from AS-OCT Images Using Deep Learning**
-   Wang et al. — IEEE ISBI 2020
-   U-Net applied to anterior segment OCT segmentation; establishes CNN viability for this anatomy.
-
-4. **nnU-Net: A Self-Configuring Method for Deep Learning-Based Biomedical Image Segmentation**
-   Isensee et al. — Nature Methods, 2021
-   State-of-the-art self-configuring U-Net pipeline; strong baseline to reference.
-
-5. **Deep Pyramid Local Attention Neural Network for Cardiac Structure Segmentation**
-   Ghamsarian et al. — IEEE ISBI 2022
-   Pyramid attention for surgical scene segmentation in cataract procedures.
-
-6. **Lens Segmentation in Cataract Surgery Videos Using Transformer-Based Approach**
-   Fang et al. — IEEE ISBI 2023
-   Transformer applied specifically to lens region segmentation; closely related to proposed task.
-
-7. **OCT Segmentation Using CNN with Attention Mechanisms**
-   Shin et al. — IEEE JBHI 2021
-   Attention-augmented CNN for ophthalmic OCT segmentation; motivates attention in this domain.
-
-### Block 2: Multimodal Fusion & Cross-Attention
-
-1. **Attention Is All You Need**
-   Vaswani et al. — NeurIPS 2017
-   Foundational transformer/attention paper; theoretical basis for the cross-attention module.
-
-2. **MMFormer: Multimodal Medical Transformer for Incomplete Multimodal Segmentation**
-   Zhang et al. — MICCAI 2022
-   Cross-modal transformer fusion for multi-modal medical segmentation; direct architectural precedent.
-
-3. **TransFusion: Cross-View Fusion with Transformer for 3D Human Pose Estimation**
-   Liu et al. — IEEE CVPR 2022
-   Cross-attention fusion between heterogeneous views; demonstrates effectiveness of the Q/K,V cross-attention pattern.
-
-4. **DATTNet: Dual Attention Transformer for Medical Image Segmentation**
-   Zhang et al. — IEEE TMI 2024
-   Dual-path attention network for medical segmentation; closely related dual-encoder concept.
-
-5. **Advances and Prospects of Multi-Modal Ophthalmic Artificial Intelligence**
-   Wang et al. — Eye and Vision, Springer 2024
-   Survey paper explicitly identifying multimodal fusion as a key direction for ophthalmic AI.
-
-6. **DECTNet: Dual-Encoder Cross-attention Transformer for Medical Image Segmentation**
-   Li et al. — IEEE ISBI 2024
-   Dual-encoder with cross-attention at the bottleneck; most directly related to proposed architecture.
-
-### Block 3: Foundation Models / SAM in Ophthalmology
-
-1. **Segment Anything in Medical Images (MedSAM)**
-   Ma et al. — Nature Communications, 2024
-   Large-scale SAM fine-tuning for medical segmentation; positions our lightweight approach as more practical for small datasets.
-
-2. **SAM-Adapter: Adapting Segment Anything in Underperformed Scenes**
-   Chen et al. — ICCV Workshop 2023
-   Adapter-based SAM fine-tuning; shows adaptation cost and complexity vs. a purpose-built dual encoder.
-
-3. **RETFound: A Foundation Model for Generalizable Disease Detection from Retinal Images**
-   Zhou et al. — Nature, 2023
-   Retinal foundation model; context for large-model trends in ophthalmic AI that this work contrasts with.
-
-4. **VisionFM: A Multi-Modal Multi-Task Vision Foundation Model for Generalizable Ophthalmic AI**
-   Qiu et al. — AAAI 2024
-   Multi-modal ophthalmic foundation model; reinforces argument that lightweight task-specific models are more accessible.
-
-### Notes
-- Verify all DOIs on IEEE Xplore / Scopus before submission
-- CaDIS and the Roboflow Cataract-Seg dataset should both be cited in the Experimental Design section
-- DECTNet (li2024dectnet) is the most important Block 2 reference — directly parallels the proposed architecture

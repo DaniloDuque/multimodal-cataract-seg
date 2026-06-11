@@ -1,0 +1,45 @@
+\section{Experimental Design}
+
+\subsection{Dataset}
+
+We evaluate on the Cataract-Seg dataset~\cite{cataractseg2023roboflow}, a publicly available collection of anterior segment images annotated for semantic segmentation of cataract-related structures including the cornea, pupil, and lens. The dataset provides pixel-level masks suitable for binary and multi-class segmentation evaluation. This domain is closely related to the surgical scene annotations established in CaDIS~\cite{grammatikopoulou2021cadis}, but focuses on still clinical images rather than intraoperative video frames.
+
+The dataset is partitioned into training, validation, and test sets following a 70\%/15\%/15\% stratified split. No patient-level overlap exists across splits.
+
+\subsection{Preprocessing}
+
+All images are resized to $512 \times 512$ pixels and RGB values normalized to $[0, 1]$. Edge maps are computed per image using Canny filtering applied to the grayscale conversion, with thresholds $t_1 = 50$ and $t_2 = 150$, and replicated to three channels before input to Encoder B. Preprocessing is applied identically across all baseline and proposed models.
+
+\subsection{Data Augmentation}
+
+During training, the following augmentations are applied on-the-fly to both the RGB image and its corresponding mask: random horizontal flip (p = 0.5), random rotation within $\pm 15^{\circ}$, and random brightness and contrast jitter (factor range $[0.8, 1.2]$). Edge maps are recomputed from the augmented RGB image after geometric transforms. No augmentation is applied at validation or test time.
+
+\subsection{Baselines}
+
+Four models are evaluated to isolate the contribution of cross-attention fusion:
+
+\begin{table}[h]
+\centering
+\caption{Models compared in the evaluation.}
+\label{tab:baselines}
+\begin{tabular}{ll}
+\hline
+\textbf{Model} & \textbf{Description} \\
+\hline
+U-Net (RGB) & Standard U-Net, RGB input only \\
+U-Net (Edge) & Standard U-Net, edge map input only \\
+U-Net (Early Fusion) & Single encoder, RGB+Edge concatenated at input \\
+Proposed & Dual encoder + bottleneck cross-attention \\
+\hline
+\end{tabular}
+\end{table}
+
+All models use the same U-Net backbone, optimizer, and training schedule to ensure fair comparison. The first three baselines share the proposed model's decoder and loss function.
+
+\subsection{Metrics}
+
+Model performance is reported using Intersection over Union (IoU), Dice coefficient, and F1 score. IoU is the primary metric, as it penalizes both false positives and false negatives and is standard in segmentation benchmarks. Dice and F1 are reported per class where multi-class labels are available.
+
+\subsection{Implementation Details}
+
+Models are implemented in PyTorch using \texttt{segmentation-models-pytorch} for the U-Net backbone. Cross-attention is implemented with \texttt{torch.nn.MultiheadAttention} ($n_\text{heads} = 8$). All models are trained with AdamW (lr $= 10^{-4}$, weight decay $= 10^{-2}$) for 100 epochs with a batch size of 8. The combined BCE+Dice loss is used throughout. Metrics are computed with \texttt{torchmetrics}. Experiments are run on a single GPU.

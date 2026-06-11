@@ -1,0 +1,45 @@
+\section{Proposed Method}
+
+\subsection{Overview}
+
+We propose a dual-encoder segmentation architecture that fuses two complementary representations of the same input image: the original RGB image and a structural edge map derived from it via Canny filtering. Although both inputs originate from a single image, they occupy heterogeneous feature spaces --- photometric and geometric --- and are processed by independent encoders whose representations are fused through a cross-attention module at the bottleneck before decoding.
+
+\subsection{Input Representations}
+
+Given an input image $\mathbf{I} \in \mathbb{R}^{H \times W \times 3}$, two representations are constructed:
+
+\textbf{RGB stream.} The original image is normalized to $[0, 1]$ and resized to $512 \times 512$.
+
+\textbf{Edge stream.} A single-channel edge map $\mathbf{E} \in \mathbb{R}^{H \times W \times 1}$ is computed by applying Canny edge detection to the grayscale conversion of $\mathbf{I}$, with thresholds $t_1 = 50$ and $t_2 = 150$. The edge map is replicated to three channels before encoding. This representation makes explicit the geometric boundary structure that is clinically relevant for lens delineation under variable illumination.
+
+\subsection{Dual-Encoder Architecture}
+
+Both streams are processed by independent U-Net encoders sharing the same architecture but no weights. The encoder follows the standard contracting path of four resolution stages, each consisting of two $3{\times}3$ convolution layers with batch normalization and ReLU activation, followed by $2{\times}2$ max-pooling. Channel depths are 64, 128, 256, and 512 respectively, producing a bottleneck feature map of spatial resolution $32{\times}32$ (for a $512{\times}512$ input).
+
+Let $\mathbf{F}_A \in \mathbb{R}^{B \times C \times H' \times W'}$ denote the bottleneck features from the RGB encoder (Encoder A) and $\mathbf{F}_B \in \mathbb{R}^{B \times C \times H' \times W'}$ from the edge encoder (Encoder B), where $C = 512$, $H' = W' = 32$.
+
+\subsection{Cross-Attention Fusion Module}
+
+The bottleneck features are fused via multi-head cross-attention \cite{vaswani2017attention}. Both feature maps are first reshaped from $(B, C, H', W')$ to sequence format $(B,\, H'W',\, C)$, yielding sequences of length $L = H'W' = 1024$ with embedding dimension $d = 512$.
+
+The RGB features $\mathbf{F}_A$ serve as queries and the edge features $\mathbf{F}_B$ supply keys and values:
+%
+\begin{equation}
+  \mathbf{F}_\text{fused} = \text{MultiheadAttn}\!\left(Q{=}\mathbf{F}_A,\; K{=}\mathbf{F}_B,\; V{=}\mathbf{F}_B\right)
+\end{equation}
+%
+with $n_\text{heads} = 8$. The output $\mathbf{F}_\text{fused} \in \mathbb{R}^{B \times L \times C}$ is reshaped back to $(B, C, H', W')$ and passed to the decoder. This design lets the RGB representation selectively attend to the spatial locations where the edge map signals strong geometric structure, without discarding the photometric content learned by Encoder A.
+
+\subsection{Decoder and Output}
+
+The decoder follows the standard U-Net expanding path, applying bilinear upsampling followed by two $3{\times}3$ convolutional blocks at each of four stages. Skip connections from Encoder A are concatenated at each resolution level before the convolutional blocks, preserving fine-grained spatial detail. A final $1{\times}1$ convolution with sigmoid activation produces the binary segmentation mask $\hat{\mathbf{M}} \in [0,1]^{H \times W}$.
+
+\subsection{Training Objective}
+
+The model is trained with a combined loss:
+%
+\begin{equation}
+  \mathcal{L} = \mathcal{L}_\text{BCE} + \mathcal{L}_\text{Dice}
+\end{equation}
+%
+where $\mathcal{L}_\text{BCE}$ is binary cross-entropy and $\mathcal{L}_\text{Dice} = 1 - \frac{2\sum \hat{M} \cdot M}{\sum \hat{M} + \sum M}$. This combination penalizes both pixel-level misclassification and overlap-level discrepancy, which is standard practice in medical image segmentation.
