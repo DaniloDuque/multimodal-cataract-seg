@@ -54,5 +54,5 @@ class DualEncoderUNet(nn.Module):
         feats_fused[-1] = fused
 
         # --- Decode using RGB skip connections ---
-        decoder_out = self.model_rgb.decoder(*feats_fused)
+        decoder_out = self.model_rgb.decoder(feats_fused)
         return self.model_rgb.segmentation_head(decoder_out)
