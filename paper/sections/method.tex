@@ -2,7 +2,7 @@
 
 \subsection{Overview}
 
-We propose a dual-encoder segmentation architecture that fuses two complementary representations of the same input image: the original RGB image and a structural edge map derived from it via Canny filtering. Although both inputs originate from a single image, they occupy heterogeneous feature spaces --- photometric and geometric --- and are processed by independent encoders whose representations are fused through a cross-attention module at the bottleneck before decoding.
+We propose a dual-encoder segmentation architecture that fuses two complementary representations of the same input image: the original RGB image and a structural edge map derived from it via Canny filtering. Although both inputs originate from a single image, they occupy heterogeneous feature spaces --- photometric and geometric --- and are processed by independent encoders whose representations are fused through cross-attention modules at multiple scales before and during decoding.
 
 \subsection{Input Representations}
 
@@ -14,25 +14,37 @@ Given an input image $\mathbf{I} \in \mathbb{R}^{H \times W \times 3}$, two repr
 
 \subsection{Dual-Encoder Architecture}
 
-Both streams are processed by independent U-Net encoders sharing the same architecture but no weights. The encoder follows the standard contracting path of four resolution stages, each consisting of two $3{\times}3$ convolution layers with batch normalization and ReLU activation, followed by $2{\times}2$ max-pooling. Channel depths are 64, 128, 256, and 512 respectively, producing a bottleneck feature map of spatial resolution $32{\times}32$ (for a $512{\times}512$ input).
+Both streams are processed by independent U-Net encoders sharing the same ResNet-34 architecture but no weights. The encoder follows the standard contracting path of five resolution stages, producing feature maps at channel depths 64, 64, 128, 256, and 512 respectively. For a $512{\times}512$ input, the bottleneck feature map has spatial resolution $16{\times}16$.
 
-Let $\mathbf{F}_A \in \mathbb{R}^{B \times C \times H' \times W'}$ denote the bottleneck features from the RGB encoder (Encoder A) and $\mathbf{F}_B \in \mathbb{R}^{B \times C \times H' \times W'}$ from the edge encoder (Encoder B), where $C = 512$, $H' = W' = 32$.
+Let $\mathbf{F}_A^{(s)}$ and $\mathbf{F}_B^{(s)}$ denote the feature maps from the RGB and edge encoders at stage $s$, with the bottleneck at stage 5 ($C=512$) and stage 4 at ($C=256$, spatial $32{\times}32$).
 
 \subsection{Cross-Attention Fusion Module}
 
-The bottleneck features are fused via multi-head cross-attention \cite{vaswani2017attention}. Both feature maps are first reshaped from $(B, C, H', W')$ to sequence format $(B,\, H'W',\, C)$, yielding sequences of length $L = H'W' = 1024$ with embedding dimension $d = 512$.
-
-The RGB features $\mathbf{F}_A$ serve as queries and the edge features $\mathbf{F}_B$ supply keys and values:
+The bottleneck features are fused via multi-head cross-attention~\cite{vaswani2017attention}. Both feature maps are reshaped from $(B, C, H', W')$ to sequence format $(B,\, H'W',\, C)$. The RGB features serve as queries and the edge features supply keys and values:
 %
 \begin{equation}
-  \mathbf{F}_\text{fused} = \text{MultiheadAttn}\!\left(Q{=}\mathbf{F}_A,\; K{=}\mathbf{F}_B,\; V{=}\mathbf{F}_B\right)
+  \tilde{\mathbf{F}}_A = \text{LayerNorm}\!\left(\alpha \cdot \text{MHA}(Q{=}\mathbf{F}_A,\; K{=}\mathbf{F}_B,\; V{=}\mathbf{F}_B) + \mathbf{F}_A\right)
 \end{equation}
 %
-with $n_\text{heads} = 8$. The output $\mathbf{F}_\text{fused} \in \mathbb{R}^{B \times L \times C}$ is reshaped back to $(B, C, H', W')$ and passed to the decoder. This design lets the RGB representation selectively attend to the spatial locations where the edge map signals strong geometric structure, without discarding the photometric content learned by Encoder A.
+where $\alpha = \sigma(\theta)$ is a learnable scalar gate with $\theta$ initialized to $-4$, giving $\alpha \approx 0.02$ at the start of training. This allows the model to begin as a near-pure RGB U-Net and gradually learn to incorporate edge information only when it is beneficial --- an important safeguard given the noisy nature of Canny edge maps.
+
+\subsection{Multi-Scale Fusion}
+
+A single bottleneck fusion discards structural information during the expanding path. We address this with two additional mechanisms:
+
+\textbf{Stage-4 cross-attention.} A second cross-attention module (256 channels, $n_\text{heads}=8$, with its own learnable gate) is applied one encoder stage above the bottleneck ($32{\times}32$ spatial resolution). This injects geometric cues into the feature hierarchy before the bottleneck, providing richer structural context at an earlier stage of the contracting path.
+
+\textbf{Edge encoder skip connections.} At each of the four skip-connection levels in the decoder, the corresponding edge encoder feature map $\mathbf{F}_B^{(s)}$ is concatenated with the RGB skip $\mathbf{F}_A^{(s)}$ along the channel dimension, then projected back to the original channel count via a $1{\times}1$ convolution:
+%
+\begin{equation}
+  \hat{\mathbf{F}}^{(s)} = \text{Conv}_{1\times1}\!\left(\left[\mathbf{F}_A^{(s)} \;\|\; \mathbf{F}_B^{(s)}\right]\right), \quad s \in \{1,2,3,4\}
+\end{equation}
+%
+This propagates geometric boundary cues through the full expanding path rather than only at the bottleneck, enabling boundary-aware feature refinement at every decoder resolution.
 
 \subsection{Decoder and Output}
 
-The decoder follows the standard U-Net expanding path, applying bilinear upsampling followed by two $3{\times}3$ convolutional blocks at each of four stages. Skip connections from Encoder A are concatenated at each resolution level before the convolutional blocks, preserving fine-grained spatial detail. A final $1{\times}1$ convolution with sigmoid activation produces the binary segmentation mask $\hat{\mathbf{M}} \in [0,1]^{H \times W}$.
+The decoder follows the standard U-Net expanding path with bilinear upsampling and two $3{\times}3$ convolutional blocks at each stage. The fused skip connections $\hat{\mathbf{F}}^{(s)}$ replace the plain RGB skips at each resolution level. A final $1{\times}1$ convolution with sigmoid activation produces the binary segmentation mask $\hat{\mathbf{M}} \in [0,1]^{H \times W}$.
 
 \subsection{Training Objective}
 

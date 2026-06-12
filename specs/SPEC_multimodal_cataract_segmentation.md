@@ -63,26 +63,48 @@ Input Image (RGB)
        │                                  │
        ▼                                  ▼
   Canny filter (t1=50, t2=150)     Encoder A (U-Net, RGB)
-       │                            64→128→256→512 channels
+       │                            64→64→128→256→512 channels
        ▼                                  │
   Encoder B (U-Net, Edge map)             │
   (same architecture, no shared weights)  │
        │                                  │
+       ├─────────── feats[1..4] ──────────┤  ← edge skips fused via 1×1 proj
+       │                                  │
+       │         feats[4] (256ch)         │
        └──────────┐          ┌────────────┘
                   ▼          ▼
-         Cross-Attention Module (bottleneck)
-         Q ← F_A  (B, 1024, 512)
-         K, V ← F_B  (B, 1024, 512)
-         n_heads = 8
+         Cross-Attention Module (stage 4, 256ch)   ← NEW
+         Q ← F_A[4]  K, V ← F_B[4]
+         n_heads = 8, gated
                   │
                   ▼
-     Decoder (expanding path, skip connections from Encoder A)
+         feats[5] (512ch, bottleneck)
+       ┌──────────┘          └────────────┐
+       ▼                                  ▼
+  F_B (edge)                         F_A (RGB)
+       └──────────┐          ┌────────────┘
+                  ▼          ▼
+         Cross-Attention Module (bottleneck, 512ch)
+         Q ← F_A  K, V ← F_B
+         n_heads = 8, gated scalar gate
+                  │
+                  ▼
+     Decoder (expanding path)
+       skip at each stage = proj(cat(edge_skip, rgb_skip))  ← NEW
                   │
                   ▼
          Segmentation Mask  (sigmoid output)
 ```
 
-**Key implementation note:** Reshape bottleneck features from `(B, C, H, W)` → `(B, H*W, C)` before `nn.MultiheadAttention`, reshape back after.
+**Three architectural improvements over v1:**
+
+1. **Learnable scalar gate** in `CrossAttentionFusion`: `gate = sigmoid(θ)` multiplies the attention output before the residual add. Initialized to `θ = -4` so the edge contribution starts near-zero and grows only if it helps.
+
+2. **Second cross-attention at encoder stage 4** (256ch, 32×32 spatial): injects structural information one level above the bottleneck for richer multi-scale context.
+
+3. **Edge encoder skip connections**: at each decoder stage, the edge encoder's feature map at the matching resolution is channel-concatenated with the RGB skip connection and projected back to the original channel count via a 1×1 conv.
+
+**Key implementation note:** Reshape feature maps from `(B, C, H, W)` → `(B, H*W, C)` before `nn.MultiheadAttention`, reshape back after.
 
 ---
 
@@ -222,11 +244,31 @@ project/
 
 **cross_attention.py**
 ```python
-# Core logic:
+# Core logic (used at both bottleneck and stage 4):
 # x_rgb: (B, C, H, W)  →  (B, H*W, C)  →  Q
 # x_edge: (B, C, H, W) →  (B, H*W, C)  →  K, V
-# out = nn.MultiheadAttention(embed_dim=C, num_heads=8)(Q, K, V)
+# gate = sigmoid(θ),  θ initialized to -4  → starts near-zero
+# out = gate * MultiheadAttention(Q, K, V) + Q  (gated residual)
 # out: (B, H*W, C)  →  (B, C, H, W)
+# Two instances: CrossAttentionFusion(512, 8) and CrossAttentionFusion(256, 8)
+```
+
+**dual_encoder.py — forward pass summary**
+```python
+feats_rgb  = encoder_A(rgb)   # list[6]: channels [3,64,64,128,256,512]
+feats_edge = encoder_B(edge)
+
+# Stage-4 cross-attention (256ch)
+feats_rgb[4] = fusion_stage4(feats_rgb[4], feats_edge[4])
+
+# Bottleneck cross-attention (512ch)
+feats_rgb[5] = fusion_bottleneck(feats_rgb[5], feats_edge[5])
+
+# Edge skip fusion at each resolution level (feats[1..4])
+for i, proj in enumerate(skip_projs):
+    feats_rgb[i+1] = proj(cat([feats_rgb[i+1], feats_edge[i+1]], dim=1))
+
+out = decoder(feats_rgb)
 ```
 
 **config.py**
