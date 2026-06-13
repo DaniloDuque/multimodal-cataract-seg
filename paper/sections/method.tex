@@ -2,7 +2,7 @@
 
 \subsection{Overview}
 
-We propose a dual-encoder segmentation architecture that fuses two complementary representations of the same input image: the original RGB image and a structural edge map derived from it via Canny filtering. Although both inputs originate from a single image, they occupy heterogeneous feature spaces --- photometric and geometric --- and are processed by independent encoders whose representations are fused through cross-attention modules at multiple scales before and during decoding.
+We propose a dual-encoder segmentation architecture that fuses two complementary representations of the same input image: the original RGB image and a structural edge map derived from it via Canny filtering. Although both inputs originate from a single image, they occupy different feature spaces ,  color and texture versus geometry ,  and are processed by independent encoders whose representations are fused through cross-attention modules at multiple scales.
 
 \begin{figure}[h]
 \centering
@@ -19,7 +19,7 @@ Given an input image $\mathbf{I} \in \mathbb{R}^{H \times W \times 3}$, two repr
 
 \textbf{RGB stream.} The original image is normalized to $[0, 1]$ and resized to $512 \times 512$.
 
-\textbf{Edge stream.} A single-channel edge map $\mathbf{E} \in \mathbb{R}^{H \times W \times 1}$ is computed by applying Canny edge detection to the grayscale conversion of $\mathbf{I}$. The Canny algorithm works in four steps: (1) smooth the image with a Gaussian filter to remove noise, (2) find the intensity gradient at every pixel (how fast and in what direction brightness changes), (3) thin the resulting edges by keeping only pixels that are local maxima in the gradient direction (non-maximum suppression), and (4) link edge pixels into continuous contours using two thresholds --- pixels above $t_2 = 150$ are kept as strong edges, pixels below $t_1 = 50$ are discarded, and pixels in between are kept only if they connect to a strong edge. This dual-threshold strategy produces clean, connected boundaries while suppressing noise. After detection, the edge map is replicated to three channels to match the expected input shape of the encoder. This representation makes explicit the geometric boundary structure that is clinically relevant for lens delineation under variable illumination.
+\textbf{Edge stream.} A single-channel edge map $\mathbf{E} \in \mathbb{R}^{H \times W \times 1}$ is computed by applying Canny edge detection to the grayscale conversion of $\mathbf{I}$. The Canny algorithm works in four steps: (1) smooth the image with a Gaussian filter to remove noise, (2) find the intensity gradient at every pixel (how fast and in what direction brightness changes), (3) thin the resulting edges by keeping only pixels that are local maxima in the gradient direction, and (4) link edge pixels into continuous contours using two thresholds ,  pixels above $t_2 = 150$ are kept as strong edges, pixels below $t_1 = 50$ are discarded, and pixels in between are kept only if they connect to a strong edge. This dual-threshold strategy produces clean, connected boundaries while suppressing noise. After detection, the edge map is replicated to three channels to match the expected input shape of the encoder. This representation makes the geometric boundary structure explicit, which is clinically relevant for lens delineation under variable illumination.
 
 \begin{figure}[h]
 \centering
@@ -30,7 +30,7 @@ Given an input image $\mathbf{I} \in \mathbb{R}^{H \times W \times 3}$, two repr
 
 \subsection{Dual-Encoder Architecture}
 
-Both streams are processed by independent U-Net encoders sharing the same ResNet-34 architecture but no weights. The encoder follows the standard contracting path of five resolution stages, producing feature maps at channel depths 64, 64, 128, 256, and 512 respectively. For a $512{\times}512$ input, the bottleneck feature map has spatial resolution $16{\times}16$.
+Both streams are processed by independent U-Net encoders sharing the same ResNet-34 architecture but no weights. The encoder follows the standard downsampling path of five resolution stages, producing feature maps at channel depths 64, 64, 128, 256, and 512 respectively. For a $512{\times}512$ input, the bottleneck feature map has spatial resolution $16{\times}16$.
 
 Let $\mathbf{F}_A^{(s)}$ and $\mathbf{F}_B^{(s)}$ denote the feature maps from the RGB and edge encoders at stage $s$, with the bottleneck at stage 5 ($C=512$) and stage 4 at ($C=256$, spatial $32{\times}32$).
 
@@ -42,15 +42,15 @@ The bottleneck features are fused via multi-head cross-attention~\cite{vaswani20
   \tilde{\mathbf{F}}_A = \text{LayerNorm}\!\left(\alpha \cdot \text{MHA}(Q{=}\mathbf{F}_A,\; K{=}\mathbf{F}_B,\; V{=}\mathbf{F}_B) + \mathbf{F}_A\right)
 \end{equation}
 %
-Intuitively, this attention operation lets each spatial location in the RGB feature map ``look at'' all spatial locations in the edge feature map and decide which boundary cues are relevant at that position. The queries $\mathbf{Q}$ represent ``what boundary information do I need here?'' from the RGB features, while the keys $\mathbf{K}$ represent ``what boundaries are present at each location?'' from the edge features; the dot product $\mathbf{Q}\mathbf{K}^\top$ produces an attention map that weights how much each edge location should influence each RGB location.
+Intuitively, this attention operation lets each spatial location in the RGB feature map ``look at'' all spatial locations in the edge feature map and decide which boundary cues are relevant at that position. The queries $\mathbf{Q}$ from the RGB features represent ``what boundary information do I need here?'' while the keys $\mathbf{K}$ from the edge features represent ``what boundaries are present at each location?'' The dot product $\mathbf{Q}\mathbf{K}^\top$ produces an attention map that determines how much each edge location should influence each RGB location.
 
-where $\alpha = \sigma(\theta)$ is a learnable scalar gate with $\theta$ initialized to $-4$, giving $\alpha \approx 0.02$ at the start of training. This allows the model to begin as a near-pure RGB U-Net and gradually learn to incorporate edge information only when it is beneficial --- an important safeguard given the noisy nature of Canny edge maps. Intuitively, the gate acts as a ``volume knob'' for edge information: it starts at zero so the model is not forced to use potentially noisy edge features, and gradient descent can turn it up only if the edge cues consistently improve the segmentation.
+where $\alpha = \sigma(\theta)$ is a learnable scalar gate with $\theta$ initialized to $-4$, giving $\alpha \approx 0.02$ at the start of training. This allows the model to begin as a near-pure RGB U-Net and gradually learn to incorporate edge information only when it is beneficial ,  an important safeguard given the noisy nature of Canny edge maps. Intuitively, the gate acts as a volume knob for edge information: it starts at zero so the model is not forced to use potentially noisy edge features, and training can turn it up only if the edge cues consistently improve the segmentation.
 
 \subsection{Multi-Scale Fusion}
 
 Fusing edge information only at the bottleneck (the lowest, most compressed resolution) means the decoder receives boundary cues only after they have been heavily downsampled. Fine-grained edge details lost during downsampling cannot be recovered. We address this with two additional mechanisms that deliver edge information at multiple resolutions:
 
-\textbf{Stage-4 cross-attention.} A second cross-attention module (256 channels, $n_\text{heads}=8$, with its own learnable gate) is applied one encoder stage above the bottleneck ($32{\times}32$ spatial resolution). This injects geometric cues into the feature hierarchy before the bottleneck, providing richer structural context at an earlier stage of the contracting path.
+\textbf{Stage-4 cross-attention.} A second cross-attention module (256 channels, $n_\text{heads}=8$, with its own learnable gate) is applied one encoder stage above the bottleneck ($32{\times}32$ spatial resolution). This injects geometric cues into the feature hierarchy before the bottleneck, providing richer structural context at an earlier stage of the downsampling path.
 
 \textbf{Edge encoder skip connections.} At each of the four skip-connection levels in the decoder, the corresponding edge encoder feature map $\mathbf{F}_B^{(s)}$ is concatenated with the RGB skip $\mathbf{F}_A^{(s)}$ along the channel dimension, then projected back to the original channel count via a $1{\times}1$ convolution:
 %
@@ -58,7 +58,7 @@ Fusing edge information only at the bottleneck (the lowest, most compressed reso
   \hat{\mathbf{F}}^{(s)} = \text{Conv}_{1\times1}\!\left(\left[\mathbf{F}_A^{(s)} \;\|\; \mathbf{F}_B^{(s)}\right]\right), \quad s \in \{1,2,3,4\}
 \end{equation}
 %
-This propagates geometric boundary cues through the full expanding path rather than only at the bottleneck, enabling boundary-aware feature refinement at every decoder resolution.
+This propagates geometric boundary cues through the full decoder path rather than only at the bottleneck, enabling boundary-aware feature refinement at every decoder resolution.
 
 \subsection{Decoder and Output}
 
@@ -72,4 +72,4 @@ The model is trained with a combined loss:
   \mathcal{L} = \mathcal{L}_\text{BCE} + \mathcal{L}_\text{Dice}
 \end{equation}
 %
-where $\mathcal{L}_\text{BCE}$ is binary cross-entropy and $\mathcal{L}_\text{Dice} = 1 - \frac{2\sum \hat{M} \cdot M}{\sum \hat{M} + \sum M}$. This combination penalizes both pixel-level misclassification and overlap-level discrepancy, which is standard practice in medical image segmentation.
+where $\mathcal{L}_\text{BCE}$ is binary cross-entropy and $\mathcal{L}_\text{Dice} = 1 - \frac{2\sum \hat{M} \cdot M}{\sum \hat{M} + \sum M}$. This combination penalizes both pixel-level errors and overlap errors, which is standard practice in medical image segmentation.

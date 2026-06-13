@@ -2,7 +2,7 @@
 
 \subsection{Quantitative Evaluation}
 
-Table~\ref{tab:results} reports IoU, Dice coefficient, and F1 score for all four models on the held-out test set. The proposed multi-scale cross-attention fusion model achieves an IoU of 0.9530, matching the best-performing baseline (U-Net Early Fusion, 0.9532) and outperforming the standard RGB U-Net baseline (0.9529). The edge-only model performs substantially worse (IoU 0.8817), confirming that Canny edge maps lack sufficient photometric information for standalone segmentation but carry complementary structural cues that benefit the proposed fusion approach.
+Table~\ref{tab:results} reports IoU, Dice coefficient, and F1 score for all four models on the held-out test set. The proposed model achieves an IoU of 0.9530, matching the best-performing baseline (U-Net Early Fusion, 0.9532) and outperforming the standard RGB U-Net baseline (0.9529). The edge-only model performs substantially worse (IoU 0.8817), confirming that Canny edge maps do not carry enough color and texture information by themselves but do carry complementary structural cues that benefit the proposed fusion approach.
 
 \begin{table}[h]
 \centering
@@ -31,7 +31,7 @@ Fig.~\ref{fig:iou_bar} illustrates the IoU gap between the edge-only model and t
 
 \subsection{Training Dynamics}
 
-Fig.~\ref{fig:loss} shows the training and validation loss curves (BCE + Dice) over 100 epochs. All models converge smoothly without divergence. The edge-only model exhibits consistently higher loss throughout training, consistent with its lower final IoU. The proposed model and Early Fusion baseline show comparable convergence speed and final loss, while the RGB baseline converges slightly faster in early epochs due to its simpler input space.
+Fig.~\ref{fig:loss} shows the training and validation loss curves (BCE + Dice) over 100 epochs. All models converge smoothly without divergence. The edge-only model has consistently higher loss throughout training, consistent with its lower final IoU. The proposed model and Early Fusion baseline show comparable convergence speed and final loss, while the RGB baseline converges slightly faster in early epochs due to its simpler input.
 
 \begin{figure}[h]
 \centering
@@ -62,6 +62,6 @@ Fig.~\ref{fig:qualitative} shows predicted segmentation masks from all four mode
 
 \subsection{Discussion}
 
-The near-identical performance of the top three models (IoU range 0.9529–0.9532) reflects dataset saturation rather than architectural equivalence. With only 30 test images, a difference of 0.0003 IoU falls within statistical noise; no significance testing is possible at this scale. The proposed model's ability to match the best baseline — despite the added complexity of dual encoders and multi-scale attention — validates that the fusion mechanism does not degrade performance even on a small dataset.
+The near-identical performance of the top three models (IoU range 0.9529--0.9532) reflects dataset saturation rather than architectural differences. With only 30 test images, a difference of 0.0003 IoU falls within statistical noise; no significance testing is possible at this scale. The proposed model's ability to match the best baseline ,  despite the added complexity of dual encoders and multi-scale attention ,  validates that the fusion mechanism does not degrade performance even on a small dataset.
 
 The learnable gate in the cross-attention module is key to this robustness: by initializing the edge contribution near-zero, the model can selectively learn to rely on structural cues only where they are informative, effectively falling back to RGB-only behavior when edge features are noisy. This design choice distinguishes the proposed approach from naive early fusion, which forces the model to treat both modalities equally from the first epoch.
