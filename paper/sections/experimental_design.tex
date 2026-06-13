@@ -38,7 +38,19 @@ All models use the same U-Net backbone, optimizer, and training schedule to ensu
 
 \subsection{Metrics}
 
-Model performance is reported using Intersection over Union (IoU), Dice coefficient, and F1 score. IoU is the primary metric, as it penalizes both false positives and false negatives and is standard in segmentation benchmarks. Dice and F1 are reported per class where multi-class labels are available.
+Model performance is reported using Intersection over Union (IoU), Dice coefficient, and F1 score. For binary segmentation, let $\hat{M}$ be the predicted mask and $M$ the ground-truth mask. IoU measures the overlap between prediction and ground truth divided by their total area:
+%
+\begin{equation}
+\text{IoU} = \frac{|\hat{M} \cap M|}{|\hat{M} \cup M|} = \frac{\text{overlap}}{\text{union}}
+\end{equation}
+%
+A value of 1 means perfect overlap, 0 means no overlap. The Dice coefficient is a related measure that weights overlap more heavily:
+%
+\begin{equation}
+\text{Dice} = \frac{2|\hat{M} \cap M|}{|\hat{M}| + |M|}
+\end{equation}
+%
+Both metrics penalize false positives (predicting a pixel that is not in the ground truth) and false negatives (missing a pixel that is in the ground truth). IoU is the primary metric, as it is more conservative (IoU $\leq$ Dice) and standard in segmentation benchmarks. F1 is mathematically equivalent to Dice in binary segmentation and reported in the same column.
 
 \subsection{Implementation Details}
 

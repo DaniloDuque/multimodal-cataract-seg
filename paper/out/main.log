@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.3.22)  13 JUN 2026 13:40
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.3.22)  13 JUN 2026 13:50
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -764,26 +764,27 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
-(./sections/introduction.tex) (./sections/related_work.tex [1{/usr/local/texliv
-e/2026/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/usr/local/texlive/2026/te
-xmf-dist/fonts/enc/dvips/base/8r.enc}
-
-
-]) (./sections/method.tex
-(./figures/architecture.tikz
-LaTeX Font Info:    Trying to load font information for U+msa on input line 19.
-
+(./sections/introduction.tex
+LaTeX Font Info:    Trying to load font information for U+msa on input line 9.
 
 (/usr/local/texlive/2026/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 19.
-
+LaTeX Font Info:    Trying to load font information for U+msb on input line 9.
 
 (/usr/local/texlive/2026/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-)) [2]
-<figures/canny_visualization.pdf, id=162, 833.47997pt x 428.5611pt>
+)) [1{/usr/local/texlive/2026/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/us
+r/local/texlive/2026/texmf-dist/fonts/enc/dvips/base/8r.enc}
+
+
+] (./sections/related_work.tex)
+(./sections/method.tex (./figures/architecture.tikz)
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[2]
+<figures/canny_visualization.pdf, id=161, 833.47997pt x 428.5611pt>
 File: figures/canny_visualization.pdf Graphic file (type pdf)
 <use figures/canny_visualization.pdf>
 Package pdftex.def Info: figures/canny_visualization.pdf  used on input line 26
@@ -799,45 +800,50 @@ Overfull \hbox (5.18176pt too wide) detected at line 43
 [][][][] \OT1/cmr/m/n/10 = []  []
  []
 
-) (./sections/experimental_design.tex [3 <./figures/canny_visualization.pdf>]
+[3 <./figures/canny_visualization.pdf>]) (./sections/experimental_design.tex
 Overfull \hbox (4.86241pt too wide) in paragraph at lines 25--35
  [][] 
  []
 
-LaTeX Font Info:    Trying to load font information for T1+pcr on input line 45
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+LaTeX Font Info:    Trying to load font information for T1+pcr on input line 57
 .
 (/usr/local/texlive/2026/texmf-dist/tex/latex/psnfss/t1pcr.fd
 File: t1pcr.fd 2001/06/04 font definitions for T1/pcr.
 ))
 (./sections/results.tex
-Underfull \hbox (badness 10000) in paragraph at lines 45--1
+Underfull \hbox (badness 10000) in paragraph at lines 57--1
 []\T1/ptm/m/n/10 Models are im-ple-mented in Py-Torch us-ing
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 45--1
+Underfull \hbox (badness 10000) in paragraph at lines 57--1
 \T1/pcr/m/n/10 segmentation-models-pytorch \T1/ptm/m/n/10 for the U-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 45--1
+Underfull \hbox (badness 10000) in paragraph at lines 57--1
 \T1/ptm/m/n/10 Net back-bone. Cross-attention is im-ple-mented with
  []
 
-<figures/iou_comparison.pdf, id=231, 498.2891pt x 280.57147pt>
+[4]
+<figures/iou_comparison.pdf, id=241, 498.2891pt x 280.57147pt>
 File: figures/iou_comparison.pdf Graphic file (type pdf)
 <use figures/iou_comparison.pdf>
 Package pdftex.def Info: figures/iou_comparison.pdf  used on input line 27.
 (pdftex.def)             Requested size: 214.20154pt x 120.60912pt.
-<figures/loss_curves.pdf, id=233, 1004.20985pt x 352.34511pt>
+<figures/loss_curves.pdf, id=243, 1004.20985pt x 352.34511pt>
 File: figures/loss_curves.pdf Graphic file (type pdf)
 <use figures/loss_curves.pdf>
 Package pdftex.def Info: figures/loss_curves.pdf  used on input line 38.
 (pdftex.def)             Requested size: 252.0pt x 88.414pt.
 
+
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-<figures/val_iou_curves.pdf, id=235, 570.58984pt x 280.0751pt>
+<figures/val_iou_curves.pdf, id=245, 570.58984pt x 280.0751pt>
 File: figures/val_iou_curves.pdf Graphic file (type pdf)
 <use figures/val_iou_curves.pdf>
 Package pdftex.def Info: figures/val_iou_curves.pdf  used on input line 47.
@@ -845,16 +851,15 @@ Package pdftex.def Info: figures/val_iou_curves.pdf  used on input line 47.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[4 <./figures/iou_comparison.pdf>]
-<figures/qualitative_predictions.pdf, id=292, 1396.29356pt x 642.24438pt>
+<figures/qualitative_predictions.pdf, id=247, 1396.29356pt x 642.24438pt>
 File: figures/qualitative_predictions.pdf Graphic file (type pdf)
 <use figures/qualitative_predictions.pdf>
 Package pdftex.def Info: figures/qualitative_predictions.pdf  used on input lin
 e 58.
 (pdftex.def)             Requested size: 252.0pt x 115.90279pt.
-) (./sections/conclusion.tex) (out/main.bbl
-[5 <./figures/loss_curves.pdf> <./figures/val_iou_curves.pdf> <./figures/qualit
-ative_predictions.pdf>])
+) (./sections/conclusion.tex [5 <./figures/iou_comparison.pdf> <./figures/loss_
+curves.pdf> <./figures/val_iou_curves.pdf> <./figures/qualitative_predictions.p
+df>]) (out/main.bbl)
 
 ** Conference Paper **
 Before submitting the final camera ready copy, remember to:
@@ -866,9 +871,7 @@ Before submitting the final camera ready copy, remember to:
  uses only Type 1 fonts and that every step in the generation
  process uses the appropriate paper size.
 
-[6
-
-] (out/main.aux)
+[6] (out/main.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
@@ -877,37 +880,38 @@ Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: 0029882776CD29A7F086F80710AFF2A3;4224.
  ) 
 Here is how much of TeX's memory you used:
- 23339 strings out of 467525
- 439386 string characters out of 5418982
- 868963 words of memory out of 5000000
- 51773 multiletter control sequences out of 15000+600000
- 750798 words of font info for 164 fonts, out of 8000000 for 9000
+ 23383 strings out of 467525
+ 440024 string characters out of 5418982
+ 879340 words of memory out of 5000000
+ 51809 multiletter control sequences out of 15000+600000
+ 754528 words of font info for 172 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 84i,10n,104p,1915b,875s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 84i,11n,104p,1915b,885s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb
 ></usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb>
 </usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmex7.p
 fb></usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pf
 b></usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb>
 </usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></
-usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></us
-r/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/l
-ocal/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/loca
-l/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/t
-exlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texl
-ive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texli
-ve/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive
-/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2
-026/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texli
-ve/2026/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2026/
-texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2026/texmf-dist
-/fonts/type1/urw/times/utmbi8a.pfb></usr/local/texlive/2026/texmf-dist/fonts/ty
-pe1/urw/times/utmr8a.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/urw/ti
-mes/utmri8a.pfb>
-Output written on out/main.pdf (6 pages, 1089021 bytes).
+usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></us
+r/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/
+local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/loc
+al/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/
+texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/tex
+live/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texliv
+e/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive
+/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2
+026/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/202
+6/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive
+/2026/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2026/te
+xmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2026/texmf-dist/f
+onts/type1/urw/times/utmbi8a.pfb></usr/local/texlive/2026/texmf-dist/fonts/type
+1/urw/times/utmr8a.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/urw/time
+s/utmri8a.pfb>
+Output written on out/main.pdf (6 pages, 1103007 bytes).
 PDF statistics:
- 568 PDF objects out of 1000 (max. 8388607)
- 308 compressed objects within 4 object streams
- 55 named destinations out of 1000 (max. 500000)
+ 575 PDF objects out of 1000 (max. 8388607)
+ 313 compressed objects within 4 object streams
+ 57 named destinations out of 1000 (max. 500000)
  262 words of extra memory for PDF output out of 10000 (max. 10000000)
 

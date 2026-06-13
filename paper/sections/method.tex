@@ -19,7 +19,7 @@ Given an input image $\mathbf{I} \in \mathbb{R}^{H \times W \times 3}$, two repr
 
 \textbf{RGB stream.} The original image is normalized to $[0, 1]$ and resized to $512 \times 512$.
 
-\textbf{Edge stream.} A single-channel edge map $\mathbf{E} \in \mathbb{R}^{H \times W \times 1}$ is computed by applying Canny edge detection to the grayscale conversion of $\mathbf{I}$, with thresholds $t_1 = 50$ and $t_2 = 150$. The edge map is replicated to three channels before encoding. This representation makes explicit the geometric boundary structure that is clinically relevant for lens delineation under variable illumination.
+\textbf{Edge stream.} A single-channel edge map $\mathbf{E} \in \mathbb{R}^{H \times W \times 1}$ is computed by applying Canny edge detection to the grayscale conversion of $\mathbf{I}$. The Canny algorithm works in four steps: (1) smooth the image with a Gaussian filter to remove noise, (2) find the intensity gradient at every pixel (how fast and in what direction brightness changes), (3) thin the resulting edges by keeping only pixels that are local maxima in the gradient direction (non-maximum suppression), and (4) link edge pixels into continuous contours using two thresholds --- pixels above $t_2 = 150$ are kept as strong edges, pixels below $t_1 = 50$ are discarded, and pixels in between are kept only if they connect to a strong edge. This dual-threshold strategy produces clean, connected boundaries while suppressing noise. After detection, the edge map is replicated to three channels to match the expected input shape of the encoder. This representation makes explicit the geometric boundary structure that is clinically relevant for lens delineation under variable illumination.
 
 \begin{figure}[h]
 \centering
@@ -42,11 +42,13 @@ The bottleneck features are fused via multi-head cross-attention~\cite{vaswani20
   \tilde{\mathbf{F}}_A = \text{LayerNorm}\!\left(\alpha \cdot \text{MHA}(Q{=}\mathbf{F}_A,\; K{=}\mathbf{F}_B,\; V{=}\mathbf{F}_B) + \mathbf{F}_A\right)
 \end{equation}
 %
-where $\alpha = \sigma(\theta)$ is a learnable scalar gate with $\theta$ initialized to $-4$, giving $\alpha \approx 0.02$ at the start of training. This allows the model to begin as a near-pure RGB U-Net and gradually learn to incorporate edge information only when it is beneficial --- an important safeguard given the noisy nature of Canny edge maps.
+Intuitively, this attention operation lets each spatial location in the RGB feature map ``look at'' all spatial locations in the edge feature map and decide which boundary cues are relevant at that position. The queries $\mathbf{Q}$ represent ``what boundary information do I need here?'' from the RGB features, while the keys $\mathbf{K}$ represent ``what boundaries are present at each location?'' from the edge features; the dot product $\mathbf{Q}\mathbf{K}^\top$ produces an attention map that weights how much each edge location should influence each RGB location.
+
+where $\alpha = \sigma(\theta)$ is a learnable scalar gate with $\theta$ initialized to $-4$, giving $\alpha \approx 0.02$ at the start of training. This allows the model to begin as a near-pure RGB U-Net and gradually learn to incorporate edge information only when it is beneficial --- an important safeguard given the noisy nature of Canny edge maps. Intuitively, the gate acts as a ``volume knob'' for edge information: it starts at zero so the model is not forced to use potentially noisy edge features, and gradient descent can turn it up only if the edge cues consistently improve the segmentation.
 
 \subsection{Multi-Scale Fusion}
 
-A single bottleneck fusion discards structural information during the expanding path. We address this with two additional mechanisms:
+Fusing edge information only at the bottleneck (the lowest, most compressed resolution) means the decoder receives boundary cues only after they have been heavily downsampled. Fine-grained edge details lost during downsampling cannot be recovered. We address this with two additional mechanisms that deliver edge information at multiple resolutions:
 
 \textbf{Stage-4 cross-attention.} A second cross-attention module (256 channels, $n_\text{heads}=8$, with its own learnable gate) is applied one encoder stage above the bottleneck ($32{\times}32$ spatial resolution). This injects geometric cues into the feature hierarchy before the bottleneck, providing richer structural context at an earlier stage of the contracting path.
 
