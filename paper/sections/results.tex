@@ -6,16 +6,16 @@ Table~\ref{tab:results} reports IoU, Dice coefficient, and F1 score for all four
 
 \begin{table}[h]
 \centering
-\caption{Test set performance of all models. IoU is the primary metric. Best result per column in \textbf{bold}.}
+\caption{Test set performance of all models. IoU is the primary metric. Best result per column in \textbf{bold}. Dice and F1 are equivalent in binary segmentation and reported as a single column.}
 \label{tab:results}
-\begin{tabular}{lccc}
+\begin{tabular}{lcc}
 \hline
-\textbf{Model} & \textbf{IoU} & \textbf{Dice} & \textbf{F1} \\
+\textbf{Model} & \textbf{IoU} & \textbf{Dice / F1} \\
 \hline
-U-Net (RGB)           & 0.9529          & 0.9761          & 0.9759 \\
-U-Net (Edge)          & 0.8817          & 0.9375          & 0.9371 \\
-U-Net (Early Fusion)  & \textbf{0.9532} & \textbf{0.9763} & \textbf{0.9761} \\
-Proposed              & 0.9530          & 0.9761          & 0.9759 \\
+U-Net (RGB)           & 0.9529          & 0.9759 \\
+U-Net (Edge)          & 0.8817          & 0.9371 \\
+U-Net (Early Fusion)  & \textbf{0.9532} & \textbf{0.9761} \\
+Proposed              & 0.9530          & 0.9759 \\
 \hline
 \end{tabular}
 \end{table}

@@ -115,11 +115,11 @@ Input Image (RGB)
 | Section | File | Status |
 |---------|------|--------|
 | Abstract | `main.tex` | ✅ Written |
-| Introduction | `sections/introduction.tex` | ⬜ TODO |
+| Introduction | `sections/introduction.tex` | ✅ Written |
 | Related Work | `sections/related_work.tex` | ✅ Written |
-| Proposed Method | `sections/method.tex` | ✅ Written |
+| Proposed Method | `sections/method.tex` | ✅ Written + TikZ architecture diagram |
 | Experimental Design | `sections/experimental_design.tex` | ✅ Written |
-| Results | `sections/results.tex` | ✅ Written (figures placeholders — insert PDFs from Colab run) |
+| Results | `sections/results.tex` | ✅ Written |
 | Conclusion | `sections/conclusion.tex` | ✅ Written |
 
 ### Final paper order
@@ -318,12 +318,12 @@ Proposed model ranked last. Root cause: bottleneck-only fusion with no gating fo
 
 ### Run 2 — v2 architecture (gate + stage-4 attention + edge skips)
 
-| Model | IoU | Dice | F1 |
-|-------|-----|------|----|
-| U-Net (RGB) | 0.9529 | 0.9761 | 0.9759 |
-| U-Net (Edge) | 0.8817 | 0.9375 | 0.9371 |
-| U-Net (Early Fusion) | 0.9532 | 0.9763 | 0.9761 |
-| **Proposed** | **0.9530** | **0.9761** | **0.9759** |
+| Model | IoU | Dice/F1 |
+|-------|-----|---------|
+| U-Net (RGB) | 0.9529 | 0.9759 |
+| U-Net (Edge) | 0.8817 | 0.9371 |
+| U-Net (Early Fusion) | 0.9532 | 0.9761 |
+| **Proposed** | **0.9530** | **0.9759** |
 
 Proposed model is now tied for first, within 0.0002 IoU of Early Fusion (noise-level difference on 30 samples).
 
@@ -380,10 +380,11 @@ The proposed model achieves competitive performance with all strong baselines, m
 - [x] Run experiments for bonus 15 points? ✅ Done — two runs completed, results in Section 10
 - [x] Write Results section in LaTeX ✅ Done (`sections/results.tex`)
 - [x] Write Conclusion section in LaTeX ✅ Done (`sections/conclusion.tex`)
-- [ ] Write Introduction section in LaTeX (`sections/introduction.tex`)
-- [ ] Run notebook in Colab, copy generated PDFs to `paper/figures/`:
-  - `figures/iou_comparison.pdf`
-  - `figures/loss_curves.pdf`
-  - `figures/qualitative_predictions.pdf`
+- [x] Write Introduction section in LaTeX ✅ Done (`sections/introduction.tex`)
+- [x] Run notebook in Colab, copy generated PDFs to `paper/figures/`:
+  - `figures/iou_comparison.pdf` ✅
+  - `figures/loss_curves.pdf` ✅
+  - `figures/val_iou_curves.pdf` ✅
+  - `figures/qualitative_predictions.pdf` ✅
 - [ ] Beamer theme for presentation?
 - [ ] Task distribution among 3 team members?

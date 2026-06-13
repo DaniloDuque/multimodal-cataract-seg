@@ -6,6 +6,9 @@
 \usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage{cite}
+\usepackage{tikz}
+\usepackage{tikzscale}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, fit, backgrounds}
 \bibliographystyle{IEEEtran}
 
 \begin{document}
@@ -32,26 +35,20 @@
 \maketitle
 
 \begin{abstract}
-Accurate segmentation of anterior segment structures — including the cornea, pupil, and lens — is clinically relevant for cataract assessment and surgical planning. Unimodal approaches that operate solely on RGB images are sensitive to lighting artifacts and the low color contrast caused by lens opacification, limiting their reliability in real-world ophthalmic settings. We propose a dual-encoder architecture that fuses complementary representations of the same image to address this limitation. One encoder processes the original RGB image to capture photometric and textural features, while a parallel encoder processes a structural edge map derived via Canny filtering to capture geometric boundary information. A cross-attention module at the bottleneck allows the RGB encoder to query the edge encoder's feature space, enriching the primary representation with explicit structural cues before decoding. Although both inputs originate from the same image, they occupy heterogeneous feature spaces — photometric and geometric — qualifying the approach as multimodal fusion in the architectural sense. We evaluate the proposed model on the Cataract-Seg dataset against unimodal U-Net baselines and an early-fusion concatenation baseline, reporting Intersection over Union (IoU) and Dice coefficient as primary metrics. The proposed cross-attention fusion strategy demonstrates improved boundary delineation under variable imaging conditions, supporting its suitability for resource-constrained clinical deployments relative to large foundation model adaptations.
+Accurate segmentation of anterior segment structures — including the cornea, pupil, and lens — is clinically relevant for cataract assessment and surgical planning. Unimodal approaches that operate solely on RGB images are sensitive to lighting artifacts and the low color contrast caused by lens opacification, limiting their reliability in real-world ophthalmic settings. We propose a dual-encoder architecture that fuses complementary representations of the same image to address this limitation. One encoder processes the original RGB image to capture photometric and textural features, while a parallel encoder processes a structural edge map derived via Canny filtering to capture geometric boundary information. A cross-attention module at the bottleneck and at encoder stage 4 allows the RGB encoder to query the edge encoder's feature space, enriching the primary representation with explicit structural cues before decoding. Although both inputs originate from the same image, they occupy heterogeneous feature spaces — photometric and geometric — qualifying the approach as multimodal fusion in the architectural sense. We evaluate the proposed model on the Cataract-Seg dataset against unimodal U-Net baselines and an early-fusion concatenation baseline, reporting Intersection over Union (IoU) and Dice coefficient as primary metrics. The proposed cross-attention fusion strategy achieves competitive performance with strong RGB baselines, matching the best result (Early Fusion, IoU 0.9532) at 0.9530 IoU, while providing a more principled and interpretable fusion mechanism. The near-ceiling performance across RGB-based models indicates dataset saturation; the gated residual design ensures the model does not degrade when edge maps are noisy, making it a practical choice for resource-constrained clinical deployments relative to large foundation model adaptations.
 \end{abstract}
 
 \begin{IEEEkeywords}
     cataract segmentation, cross-modal attention, anterior segment, deep learning, multimodal fusion
 \end{IEEEkeywords}
 
-\section{Introduction}
-Your introduction goes here.
+\input{sections/introduction}
 
 \input{sections/related_work}
-
 \input{sections/method}
-
 \input{sections/experimental_design}
-
 \input{sections/results}
-
 \input{sections/conclusion}
 
 \bibliography{refs}
-
 \end{document}

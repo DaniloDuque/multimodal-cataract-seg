@@ -4,6 +4,15 @@
 
 We propose a dual-encoder segmentation architecture that fuses two complementary representations of the same input image: the original RGB image and a structural edge map derived from it via Canny filtering. Although both inputs originate from a single image, they occupy heterogeneous feature spaces --- photometric and geometric --- and are processed by independent encoders whose representations are fused through cross-attention modules at multiple scales before and during decoding.
 
+\begin{figure}[h]
+\centering
+\resizebox{\columnwidth}{!}{%
+    \input{figures/architecture.tikz}
+}
+\caption{Proposed dual-encoder architecture. Blue: RGB encoder (Enc-A). Red: Edge encoder (Enc-B). Orange: Cross-attention fusion modules with learnable gates $\alpha_1$, $\alpha_2$. Purple: fused skip projections ($1{\times}1$ conv). Green: decoder. Dashed arrows indicate edge skip connections concatenated with RGB skips before projection.}
+\label{fig:architecture}
+\end{figure}
+
 \subsection{Input Representations}
 
 Given an input image $\mathbf{I} \in \mathbb{R}^{H \times W \times 3}$, two representations are constructed:

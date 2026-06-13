@@ -1,0 +1,97 @@
+\begin{tikzpicture}[
+    font=\scriptsize,
+    box/.style={rectangle, rounded corners=2pt, minimum width=1.3cm, minimum height=0.5cm, align=center, draw, thick},
+    enc/.style={box, fill=blue!15},
+    edge/.style={box, fill=red!12},
+    attn/.style={box, fill=orange!30, minimum width=1.6cm},
+    dec/.style={box, fill=green!15},
+    skip/.style={box, fill=purple!15, minimum width=1.3cm},
+    io/.style={box, fill=gray!15, minimum width=1.5cm},
+    arr/.style={-{Stealth[length=4pt]}, thick},
+    darr/.style={-{Stealth[length=3pt]}, thick, dashed, purple!60},
+    node distance=0.5cm and 0.6cm
+]
+
+%% ── Column x positions (manual for precision) ────────────────────────────────
+% S1=0, S2=1.9, S3=3.8, S4=5.7, S5=7.6  (cm)
+
+%% ── RGB Encoder row (y=0) ───────────────────────────────────────────────────
+\node[io]  (in_rgb)  at (-1.9, 0)   {RGB\\$512^2{\times}3$};
+\node[enc] (ea1)     at (0,    0)   {Enc-A\\S1 64ch};
+\node[enc] (ea2)     at (1.9,  0)   {Enc-A\\S2 64ch};
+\node[enc] (ea3)     at (3.8,  0)   {Enc-A\\S3 128ch};
+\node[enc] (ea4)     at (5.7,  0)   {Enc-A\\S4 256ch};
+\node[enc] (ea5)     at (7.6,  0)   {Enc-A\\S5 512ch};
+
+%% ── Edge Encoder row (y=-1.4) ────────────────────────────────────────────────
+\node[io]  (in_edge) at (-1.9, -1.4) {Edge\\$512^2{\times}3$};
+\node[edge](eb1)     at (0,    -1.4) {Enc-B\\S1 64ch};
+\node[edge](eb2)     at (1.9,  -1.4) {Enc-B\\S2 64ch};
+\node[edge](eb3)     at (3.8,  -1.4) {Enc-B\\S3 128ch};
+\node[edge](eb4)     at (5.7,  -1.4) {Enc-B\\S4 256ch};
+\node[edge](eb5)     at (7.6,  -1.4) {Enc-B\\S5 512ch};
+
+%% ── Cross-Attention row (y=1.2) ─────────────────────────────────────────────
+\node[attn](ca4) at (5.7, 1.3) {Cross-Attn\\256ch $\alpha_1$};
+\node[attn](ca5) at (7.6, 1.3) {Cross-Attn\\512ch $\alpha_2$};
+
+%% ── Skip Projection row (y=-2.9) ────────────────────────────────────────────
+\node[skip](sk1) at (0,   -2.9) {Skip\\64ch};
+\node[skip](sk2) at (1.9, -2.9) {Skip\\64ch};
+\node[skip](sk3) at (3.8, -2.9) {Skip\\128ch};
+\node[skip](sk4) at (5.7, -2.9) {Skip\\256ch};
+
+%% ── Decoder row (y=-4.3) ─────────────────────────────────────────────────────
+\node[dec] (d4)  at (5.7, -4.3) {Dec S4\\256ch};
+\node[dec] (d3)  at (3.8, -4.3) {Dec S3\\128ch};
+\node[dec] (d2)  at (1.9, -4.3) {Dec S2\\64ch};
+\node[dec] (d1)  at (0,   -4.3) {Dec S1\\64ch};
+\node[io]  (out) at (-1.9,-4.3) {Mask\\$512^2$};
+
+%% ── Bottleneck → decoder ─────────────────────────────────────────────────────
+\node[dec] (bot) at (7.6, -4.3) {Bottleneck\\512ch};
+
+%% ── Input arrows ─────────────────────────────────────────────────────────────
+\draw[arr] (in_rgb)  -- (ea1);
+\draw[arr] (in_edge) -- (eb1);
+
+%% ── RGB encoder chain ────────────────────────────────────────────────────────
+\draw[arr] (ea1)--(ea2); \draw[arr] (ea2)--(ea3);
+\draw[arr] (ea3)--(ea4); \draw[arr] (ea4)--(ea5);
+
+%% ── Edge encoder chain ───────────────────────────────────────────────────────
+\draw[arr] (eb1)--(eb2); \draw[arr] (eb2)--(eb3);
+\draw[arr] (eb3)--(eb4); \draw[arr] (eb4)--(eb5);
+
+%% ── Into cross-attention (Q from Enc-A, KV from Enc-B) ───────────────────────
+\draw[arr] (ea4.north) -- (ca4.south) node[midway,right,font=\tiny]{Q};
+\draw[arr] (eb4.north) -- ++(0,0.45) -| (ca4.south east) node[near start,right,font=\tiny]{K,V};
+\draw[arr] (ea5.north) -- (ca5.south) node[midway,right,font=\tiny]{Q};
+\draw[arr] (eb5.north) -- ++(0,0.45) -| (ca5.south east) node[near start,right,font=\tiny]{K,V};
+
+%% ── Cross-attn outputs → skip/bottleneck ─────────────────────────────────────
+\draw[arr] (ca4.south west) -- (sk4.north);
+\draw[arr] (ca5.south) -- (bot.north);
+
+%% ── Edge skips (dashed) ──────────────────────────────────────────────────────
+\draw[darr] (eb1.south) -- (sk1.north);
+\draw[darr] (eb2.south) -- (sk2.north);
+\draw[darr] (eb3.south) -- (sk3.north);
+
+%% ── RGB skips (dashed) ───────────────────────────────────────────────────────
+\draw[darr] (ea1.south) -- (sk1.north);
+\draw[darr] (ea2.south) -- (sk2.north);
+\draw[darr] (ea3.south) -- (sk3.north);
+
+%% ── Skip projs → decoder ─────────────────────────────────────────────────────
+\draw[arr] (sk1.south) -- (d1.north);
+\draw[arr] (sk2.south) -- (d2.north);
+\draw[arr] (sk3.south) -- (d3.north);
+\draw[arr] (sk4.south) -- (d4.north);
+
+%% ── Decoder chain ────────────────────────────────────────────────────────────
+\draw[arr] (bot.south) -- (d4.east);
+\draw[arr] (d4)--(d3); \draw[arr] (d3)--(d2);
+\draw[arr] (d2)--(d1); \draw[arr] (d1)--(out);
+
+\end{tikzpicture}
