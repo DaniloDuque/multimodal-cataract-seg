@@ -13,6 +13,6 @@ CONFIG = {
     "device":          "cuda" if torch.cuda.is_available() else "cpu",
     "data_root":       "data/cataract-seg",
     "checkpoints_dir": "checkpoints/",
-    "figures_dir":     "../paper/figures",
+    "figures_dir":     "../figures",
     "seed":            42,
 }
