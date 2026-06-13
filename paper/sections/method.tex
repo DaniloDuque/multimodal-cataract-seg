@@ -21,6 +21,13 @@ Given an input image $\mathbf{I} \in \mathbb{R}^{H \times W \times 3}$, two repr
 
 \textbf{Edge stream.} A single-channel edge map $\mathbf{E} \in \mathbb{R}^{H \times W \times 1}$ is computed by applying Canny edge detection to the grayscale conversion of $\mathbf{I}$, with thresholds $t_1 = 50$ and $t_2 = 150$. The edge map is replicated to three channels before encoding. This representation makes explicit the geometric boundary structure that is clinically relevant for lens delineation under variable illumination.
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=\columnwidth]{figures/canny_visualization.pdf}
+\caption{Sample anterior segment images (top) and their corresponding Canny edge maps (bottom, $t_1{=}50$, $t_2{=}150$). The edge stream makes lens and corneal boundaries geometrically explicit even when color contrast is low.}
+\label{fig:canny}
+\end{figure}
+
 \subsection{Dual-Encoder Architecture}
 
 Both streams are processed by independent U-Net encoders sharing the same ResNet-34 architecture but no weights. The encoder follows the standard contracting path of five resolution stages, producing feature maps at channel depths 64, 64, 128, 256, and 512 respectively. For a $512{\times}512$ input, the bottleneck feature map has spatial resolution $16{\times}16$.

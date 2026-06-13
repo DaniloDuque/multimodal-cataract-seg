@@ -1,0 +1,74 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\bibstyle{IEEEtran}
+\citation{wang2024multimodal}
+\citation{zhang2022mmformer}
+\citation{li2024dectnet}
+\citation{cataractseg2023roboflow}
+\citation{ronneberger2015unet}
+\@writefile{toc}{\contentsline {section}{\numberline {I}Introduction}{1}{section.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {II}Related Work}{1}{section.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-A}}Anterior Segment and Cataract Segmentation}{1}{subsection.2.1}\protected@file@percent }
+\citation{grammatikopoulou2021cadis}
+\citation{vaswani2017attention}
+\citation{zhang2022mmformer}
+\citation{li2024dectnet}
+\citation{wang2024multimodal}
+\citation{ma2024medsam}
+\citation{chen2023samadapter}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-B}}Multimodal Fusion in Medical Imaging}{2}{subsection.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-C}}Foundation Models for Ophthalmic Segmentation}{2}{subsection.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-D}}Positioning of the Proposed Work}{2}{subsection.2.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {III}Proposed Method}{2}{section.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-A}}Overview}{2}{subsection.3.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Proposed dual-encoder architecture. Blue: RGB encoder (Enc-A). Red: Edge encoder (Enc-B). Orange: Cross-attention fusion modules with learnable gates $\alpha _1$, $\alpha _2$. Purple: fused skip projections ($1{\times }1$ conv). Green: decoder. Dashed arrows indicate edge skip connections concatenated with RGB skips before projection.}}{2}{figure.1}\protected@file@percent }
+\newlabel{fig:architecture}{{1}{2}{Proposed dual-encoder architecture. Blue: RGB encoder (Enc-A). Red: Edge encoder (Enc-B). Orange: Cross-attention fusion modules with learnable gates $\alpha _1$, $\alpha _2$. Purple: fused skip projections ($1{\times }1$ conv). Green: decoder. Dashed arrows indicate edge skip connections concatenated with RGB skips before projection}{figure.1}{}}
+\citation{vaswani2017attention}
+\citation{cataractseg2023roboflow}
+\citation{grammatikopoulou2021cadis}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-B}}Input Representations}{3}{subsection.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-C}}Dual-Encoder Architecture}{3}{subsection.3.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-D}}Cross-Attention Fusion Module}{3}{subsection.3.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-E}}Multi-Scale Fusion}{3}{subsection.3.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-F}}Decoder and Output}{3}{subsection.3.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-G}}Training Objective}{3}{subsection.3.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {IV}Experimental Design}{3}{section.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-A}}Dataset}{3}{subsection.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-B}}Preprocessing}{3}{subsection.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-C}}Data Augmentation}{3}{subsection.4.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {I}{\ignorespaces Models compared in the evaluation.}}{4}{table.1}\protected@file@percent }
+\newlabel{tab:baselines}{{I}{4}{Models compared in the evaluation}{table.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-D}}Baselines}{4}{subsection.4.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-E}}Metrics}{4}{subsection.4.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-F}}Implementation Details}{4}{subsection.4.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {V}Results}{4}{section.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-A}}Quantitative Evaluation}{4}{subsection.5.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {II}{\ignorespaces Test set performance of all models. IoU is the primary metric. Best result per column in \textbf  {bold}. Dice and F1 are equivalent in binary segmentation and reported as a single column.}}{4}{table.2}\protected@file@percent }
+\newlabel{tab:results}{{II}{4}{Test set performance of all models. IoU is the primary metric. Best result per column in \textbf {bold}. Dice and F1 are equivalent in binary segmentation and reported as a single column}{table.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Test set IoU for all four models. Y-axis starts at 0.85 to magnify differences. The proposed model matches the best baseline within 0.0002 IoU.}}{4}{figure.2}\protected@file@percent }
+\newlabel{fig:iou_bar}{{2}{4}{Test set IoU for all four models. Y-axis starts at 0.85 to magnify differences. The proposed model matches the best baseline within 0.0002 IoU}{figure.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-B}}Training Dynamics}{4}{subsection.5.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Training (left) and validation (right) loss curves for all four models over 100 epochs.}}{4}{figure.3}\protected@file@percent }
+\newlabel{fig:loss}{{3}{4}{Training (left) and validation (right) loss curves for all four models over 100 epochs}{figure.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-C}}Qualitative Analysis}{4}{subsection.5.3}\protected@file@percent }
+\citation{grammatikopoulou2021cadis}
+\bibdata{refs}
+\bibcite{wang2024multimodal}{1}
+\bibcite{zhang2022mmformer}{2}
+\bibcite{li2024dectnet}{3}
+\bibcite{cataractseg2023roboflow}{4}
+\bibcite{ronneberger2015unet}{5}
+\bibcite{grammatikopoulou2021cadis}{6}
+\bibcite{vaswani2017attention}{7}
+\bibcite{ma2024medsam}{8}
+\bibcite{chen2023samadapter}{9}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Validation IoU over 100 training epochs for all four models.}}{5}{figure.4}\protected@file@percent }
+\newlabel{fig:iou_curves}{{4}{5}{Validation IoU over 100 training epochs for all four models}{figure.4}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Qualitative comparison of predicted masks on three test images. Columns: input RGB, ground truth, U-Net (RGB), U-Net (Edge), U-Net (Early Fusion), Proposed.}}{5}{figure.5}\protected@file@percent }
+\newlabel{fig:qualitative}{{5}{5}{Qualitative comparison of predicted masks on three test images. Columns: input RGB, ground truth, U-Net (RGB), U-Net (Edge), U-Net (Early Fusion), Proposed}{figure.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-D}}Discussion}{5}{subsection.5.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {VI}Conclusion}{5}{section.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{References}{5}{section*.1}\protected@file@percent }
+\gdef \@abspage@last{5}

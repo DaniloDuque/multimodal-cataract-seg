@@ -204,7 +204,17 @@ Dos espacios de features heterogéneos\\de \textbf{una sola imagen} $\rightarrow
 \end{columns}
 \end{frame}
 
-% ── Slide 11: Encoders duales ─────────────────────────────────────────────────
+% ── Slide 11: Visualización Canny ────────────────────────────────────────────
+\begin{frame}{¿Cómo se ve el mapa de bordes Canny?}
+\centering
+\includegraphics[width=0.92\textwidth]{../figures/canny_visualization.pdf}
+\vspace{0.3em}
+
+{\small \textbf{Fila superior:} imágenes RGB originales \quad \textbf{Fila inferior:} mapas de bordes Canny ($t_1{=}50$, $t_2{=}150$)}\\[0.2em]
+{\small Los bordes del cristalino y la córnea son geométricamente explícitos incluso cuando el contraste de color es bajo.}
+\end{frame}
+
+% ── Slide 12: Encoders duales ─────────────────────────────────────────────────
 \begin{frame}{Encoders Duales}
 \begin{itemize}
     \item Dos encoders U-Net \textbf{independientes} — misma arquitectura ResNet-34, \textbf{sin pesos compartidos}
