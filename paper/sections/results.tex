@@ -40,6 +40,15 @@ Fig.~\ref{fig:loss} shows the training and validation loss curves (BCE + Dice) o
 \label{fig:loss}
 \end{figure}
 
+Fig.~\ref{fig:iou_curves} shows the validation IoU over training epochs. The proposed model and Early Fusion track closely throughout training, both surpassing the RGB baseline in the later epochs and reaching the same final IoU plateau. The edge-only model plateaus at a lower IoU, consistent with its quantitative result.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\columnwidth]{figures/val_iou_curves.pdf}
+\caption{Validation IoU over 100 training epochs for all four models.}
+\label{fig:iou_curves}
+\end{figure}
+
 \subsection{Qualitative Analysis}
 
 Fig.~\ref{fig:qualitative} shows predicted segmentation masks from all four models on three representative test images. The edge-only model produces visibly coarser and noisier boundaries. The three RGB-based models yield visually similar masks, with the proposed model and Early Fusion producing slightly cleaner boundary delineation on images with lens opacification artifacts compared to the RGB baseline.

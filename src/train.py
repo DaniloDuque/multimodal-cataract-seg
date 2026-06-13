@@ -48,6 +48,20 @@ def validate(model, loader, device: str, mode: str) -> float:
     return total_loss / len(loader)
 
 
+## @brief Computes mean IoU on a dataloader (no gradients).
+#  @return Mean IoU (float).
+def validate_iou(model, loader, device: str, mode: str) -> float:
+    from torchmetrics import JaccardIndex
+    iou_metric = JaccardIndex(task="binary").to(device)
+    model.eval()
+    with torch.no_grad():
+        for rgb, edge, mask in loader:
+            rgb, edge, mask = rgb.to(device), edge.to(device), mask.to(device)
+            preds = (torch.sigmoid(_forward(model, rgb, edge, mode)) > 0.5).long()
+            iou_metric.update(preds, mask.long())
+    return iou_metric.compute().item()
+
+
 ## @brief Full training loop with checkpoint saving.
 #  @param model       PyTorch model.
 #  @param train_loader Training DataLoader.
@@ -55,22 +69,24 @@ def validate(model, loader, device: str, mode: str) -> float:
 #  @param cfg          CONFIG dict from config.py.
 #  @param mode         Input mode string.
 #  @param run_name     Name used for the saved checkpoint file.
-#  @return Dict with 'train_losses' and 'val_losses' lists.
+#  @return Dict with 'train_losses', 'val_losses', and 'val_ious' lists.
 def train(model, train_loader, val_loader, cfg: dict, mode: str, run_name: str) -> dict:
     device    = cfg["device"]
     optimizer = torch.optim.AdamW(model.parameters(), lr=cfg["lr"],
                                   weight_decay=cfg["weight_decay"])
     os.makedirs(cfg["checkpoints_dir"], exist_ok=True)
 
-    history = {"train_losses": [], "val_losses": []}
+    history = {"train_losses": [], "val_losses": [], "val_ious": []}
     best_val = float("inf")
 
     for epoch in range(cfg["epochs"]):
         train_loss = train_one_epoch(model, train_loader, optimizer, device, mode)
         val_loss   = validate(model, val_loader, device, mode)
+        val_iou    = validate_iou(model, val_loader, device, mode)
 
         history["train_losses"].append(train_loss)
         history["val_losses"].append(val_loss)
+        history["val_ious"].append(val_iou)
 
         if val_loss < best_val:
             best_val = val_loss
@@ -79,7 +95,7 @@ def train(model, train_loader, val_loader, cfg: dict, mode: str, run_name: str) 
 
         if (epoch + 1) % 10 == 0:
             print(f"[{run_name}] Epoch {epoch+1}/{cfg['epochs']}  "
-                  f"train={train_loss:.4f}  val={val_loss:.4f}")
+                  f"train={train_loss:.4f}  val={val_loss:.4f}  val_iou={val_iou:.4f}")
 
     return history
 
