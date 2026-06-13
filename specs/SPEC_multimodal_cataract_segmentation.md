@@ -119,8 +119,8 @@ Input Image (RGB)
 | Related Work | `sections/related_work.tex` | ✅ Written |
 | Proposed Method | `sections/method.tex` | ✅ Written |
 | Experimental Design | `sections/experimental_design.tex` | ✅ Written |
-| Results | `sections/results.tex` | ✅ Experiments done — write from actual numbers |
-| Conclusion | `sections/conclusion.tex` | ⬜ TODO |
+| Results | `sections/results.tex` | ✅ Written (figures placeholders — insert PDFs from Colab run) |
+| Conclusion | `sections/conclusion.tex` | ✅ Written |
 
 ### Final paper order
 1. Abstract
@@ -378,8 +378,12 @@ The proposed model achieves competitive performance with all strong baselines, m
 ## 13. Open Questions / Decisions Pending
 
 - [x] Run experiments for bonus 15 points? ✅ Done — two runs completed, results in Section 10
-- [ ] Write Results section in LaTeX (`sections/results.tex`)
-- [ ] Write Conclusion section in LaTeX (`sections/conclusion.tex`)
+- [x] Write Results section in LaTeX ✅ Done (`sections/results.tex`)
+- [x] Write Conclusion section in LaTeX ✅ Done (`sections/conclusion.tex`)
 - [ ] Write Introduction section in LaTeX (`sections/introduction.tex`)
+- [ ] Run notebook in Colab, copy generated PDFs to `paper/figures/`:
+  - `figures/iou_comparison.pdf`
+  - `figures/loss_curves.pdf`
+  - `figures/qualitative_predictions.pdf`
 - [ ] Beamer theme for presentation?
 - [ ] Task distribution among 3 team members?
