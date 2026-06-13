@@ -118,7 +118,7 @@ Input Image (RGB)
 | Introduction | `sections/introduction.tex` | ✅ Written |
 | Related Work | `sections/related_work.tex` | ✅ Written |
 | Proposed Method | `sections/method.tex` | ✅ Written + TikZ architecture diagram |
-| Experimental Design | `sections/experimental_design.tex` | ✅ Written |
+| Experimental Design | `sections/experimental_design.tex` | ✅ Written + reproducibility (A100, seed 42, repo link) |
 | Results | `sections/results.tex` | ✅ Written |
 | Conclusion | `sections/conclusion.tex` | ✅ Written |
 
