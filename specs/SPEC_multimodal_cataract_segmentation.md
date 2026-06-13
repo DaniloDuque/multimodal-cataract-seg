@@ -386,5 +386,6 @@ The proposed model achieves competitive performance with all strong baselines, m
   - `figures/loss_curves.pdf` ✅
   - `figures/val_iou_curves.pdf` ✅
   - `figures/qualitative_predictions.pdf` ✅
-- [ ] Beamer theme for presentation?
+- [x] Beamer presentation ✅ Done (`presentation/slides.tex`, 26 slides, Spanish, Metropolis theme)
+- [ ] Add Canny visualization to notebook: show side-by-side RGB vs Canny edge map for 3–4 dataset images so readers understand what the edge stream looks like in practice
 - [ ] Task distribution among 3 team members?
