@@ -311,7 +311,7 @@ Usar \textbf{múltiples representaciones} de la misma escena y \textbf{fusionarl
 \end{frame}
 
 % ══════════════════════════════════════════════════════════════════════════════
-%  DESIREÉ — Slides 14–21  (~7 min)
+%  DESIREÉ — Slides 14–22  (~7 min)
 % ══════════════════════════════════════════════════════════════════════════════
 
 % ── Slide 14: Vista general de la arquitectura ────────────────────────────────
@@ -327,7 +327,28 @@ Usar \textbf{múltiples representaciones} de la misma escena y \textbf{fusionarl
 \end{columns}
 \end{frame}
 
-% ── Slide 15: Representaciones de entrada ────────────────────────────────────
+% ── Slide 15: Flujo completo del modelo ──────────────────────────────────────
+\begin{frame}{Flujo Completo del Modelo}
+\footnotesize
+\textbf{1. Entrada.} Una imagen RGB $512^2$ alimenta el \textcolor{blue!80}{Encoder RGB}. La misma pasa por Canny ($t_1{=}50$, $t_2{=}150$) y el mapa de bordes alimenta el \textcolor{red!80}{Encoder de bordes}. Ambos son ResNet-34 sin pesos compartidos.
+
+\medskip
+\textbf{2. Encoders.} Cada uno reduce resolución y aumenta canales en 5 etapas: $64{\to}64{\to}128{\to}256{\to}512$ canales, desde $256^2$ hasta $16^2$ en el cuello de botella.
+
+\medskip
+\textbf{3. Cross-Attention.} En stage 4 ($32^2$, 256ch) y bottleneck ($16^2$, 512ch): RGB $\to$ \textbf{Q}, bordes $\to$ \textbf{K,V}. Cada uno tiene un gate $\alpha{=}\sigma(\theta)$ con $\theta{=}{-}4$, para que el modelo aprenda a usar bordes gradualmente.
+
+\medskip
+\textbf{4. Decoder.} Parte del bottleneck fusionado y expande: $512{\to}256{\to}128{\to}64$ canales hasta la máscara $512^2$.
+
+\medskip
+\textbf{5. Skip connections duales.} En cada nivel del decoder, la feature RGB y la de bordes se concatenan por canales y pasan por una Conv $1\times1$ que proyecta al canal original.
+
+\medskip
+\textbf{6. Salida.} Máscara binaria $512^2$ con sigmoid.
+\end{frame}
+
+% ── Slide 16: Representaciones de entrada ────────────────────────────────────
 \begin{frame}{Representaciones de Entrada}
 \begin{columns}[T]
 \column{0.5\textwidth}
@@ -355,7 +376,7 @@ La estructura de bordes explícita hace detectable el contorno del cristalino in
 \end{columns}
 \end{frame}
 
-% ── Slide 16: Visualización Canny ────────────────────────────────────────────
+% ── Slide 17: Visualización Canny ────────────────────────────────────────────
 \begin{frame}{¿Cómo se ve el mapa de bordes Canny?}
 \centering
 \includegraphics[width=0.7\textwidth]{../figures/canny_visualization.pdf}
@@ -364,7 +385,7 @@ La estructura de bordes explícita hace detectable el contorno del cristalino in
 {\small Los bordes del cristalino y la córnea son geométricamente explícitos incluso cuando el contraste de color es bajo.}
 \end{frame}
 
-% ── Slide 17: Encoders duales ─────────────────────────────────────────────────
+% ── Slide 18: Encoders duales ─────────────────────────────────────────────────
 \begin{frame}{Encoders Duales}
 \begin{itemize}
     \item Dos encoders U-Net \textbf{independientes} — misma arquitectura ResNet-34, \textbf{sin pesos compartidos}
@@ -384,7 +405,7 @@ Los pesos separados permiten que cada encoder aprenda representaciones especiali
 \end{block}
 \end{frame}
 
-% ── Slide 18: Módulo de Cross-Attention ──────────────────────────────────────
+% ── Slide 19: Módulo de Cross-Attention ──────────────────────────────────────
 \begin{frame}{Módulo de Cross-Attention}
 \begin{columns}
 \column{0.55\textwidth}
@@ -410,7 +431,7 @@ Enriquece la representación fotométrica con información estructural geométri
 \end{columns}
 \end{frame}
 
-% ── Slide 19: Gate aprendible ─────────────────────────────────────────────────
+% ── Slide 20: Gate aprendible ─────────────────────────────────────────────────
 \begin{frame}{Gate Escalar Aprendible}
 \begin{columns}
 \column{0.55\textwidth}
@@ -435,7 +456,7 @@ Early Fusion fuerza ambas modalidades desde la época 1. El gate es selectivo.
 \end{columns}
 \end{frame}
 
-% ── Slide 20: Fusión multi-escala ─────────────────────────────────────────────
+% ── Slide 21: Fusión multi-escala ─────────────────────────────────────────────
 \begin{frame}{Fusión Multi-Escala}
 \textbf{Dos instancias de cross-attention:}
 \vspace{0.3em}
@@ -454,7 +475,7 @@ Los cues geométricos se propagan por \textbf{todo el camino de expansión}, no 
 \end{block}
 \end{frame}
 
-% ── Slide 21: Entrenamiento ───────────────────────────────────────────────────
+% ── Slide 22: Entrenamiento ───────────────────────────────────────────────────
 \begin{frame}{Configuración de Entrenamiento}
 \begin{columns}
 \column{0.48\textwidth}
@@ -487,10 +508,10 @@ lr $= 10^{-4}$, weight decay $= 10^{-2}$
 \end{frame}
 
 % ══════════════════════════════════════════════════════════════════════════════
-%  DANILO — Slides 22–28  (~6 min)
+%  DANILO — Slides 23–29  (~6 min)
 % ══════════════════════════════════════════════════════════════════════════════
 
-% ── Slide 22: Dataset ─────────────────────────────────────────────────────────
+% ── Slide 23: Dataset ─────────────────────────────────────────────────────────
 \begin{frame}{Dataset: Cataract-Seg}
 \begin{columns}
 \column{0.5\textwidth}
@@ -532,7 +553,7 @@ U-Net (Fusión T.) & RGB+bordes concat. \\
 \end{columns}
 \end{frame}
 
-% ── Slide 23: Métricas ────────────────────────────────────────────────────────
+% ── Slide 24: Métricas ────────────────────────────────────────────────────────
 \begin{frame}{Métricas de Evaluación}
 \begin{itemize}
     \item \textbf{IoU (Intersection over Union)} — métrica primaria
@@ -549,7 +570,7 @@ U-Net (Fusión T.) & RGB+bordes concat. \\
 \end{itemize}
 \end{frame}
 
-% ── Slide 24: Resultados cuantitativos ───────────────────────────────────────
+% ── Slide 25: Resultados cuantitativos ───────────────────────────────────────
 \begin{frame}{Resultados Cuantitativos}
 \centering
 \begin{tabular}{lcc}
@@ -570,7 +591,7 @@ U-Net (Fusión T.)      & \textbf{0.9532} & \textbf{0.9761} \\
 \end{itemize}
 \end{frame}
 
-% ── Slide 25: Gráfico IoU ─────────────────────────────────────────────────────
+% ── Slide 26: Gráfico IoU ─────────────────────────────────────────────────────
 \begin{frame}{Comparación de IoU en Test}
 \centering
 \includegraphics[width=0.75\textwidth]{../paper/figures/iou_comparison.pdf}
@@ -579,7 +600,7 @@ U-Net (Fusión T.)      & \textbf{0.9532} & \textbf{0.9761} \\
 {\small Eje Y desde 0.85 para ampliar diferencias. La brecha principal es entre bordes solos y los modelos RGB.}
 \end{frame}
 
-% ── Slide 26: Curvas de pérdida ──────────────────────────────────────────────
+% ── Slide 27: Curvas de pérdida ──────────────────────────────────────────────
 \begin{frame}{Curvas de Pérdida}
 \centering
 \includegraphics[width=0.85\textwidth]{../paper/figures/loss_curves.pdf}
@@ -588,7 +609,7 @@ U-Net (Fusión T.)      & \textbf{0.9532} & \textbf{0.9761} \\
 {\small Pérdida BCE+Dice de entrenamiento (izq.) y validación (der.) — 100 épocas. Todos los modelos convergen sin divergencia.}
 \end{frame}
 
-% ── Slide 27: Curvas de IoU de validación ────────────────────────────────────
+% ── Slide 28: Curvas de IoU de validación ────────────────────────────────────
 \begin{frame}{IoU de Validación por Época}
 \centering
 \includegraphics[width=0.82\textwidth]{../paper/figures/val_iou_curves.pdf}
@@ -597,7 +618,7 @@ U-Net (Fusión T.)      & \textbf{0.9532} & \textbf{0.9761} \\
 {\small El modelo propuesto y Fusión Temprana siguen trayectorias paralelas. Bordes solos: meseta más baja.}
 \end{frame}
 
-% ── Slide 28: Predicciones cualitativas ──────────────────────────────────────
+% ── Slide 29: Predicciones cualitativas ──────────────────────────────────────
 \begin{frame}{Predicciones Cualitativas}
 \centering
 \includegraphics[width=0.82\textwidth]{../paper/figures/qualitative_predictions.pdf}
@@ -606,14 +627,14 @@ U-Net (Fusión T.)      & \textbf{0.9532} & \textbf{0.9761} \\
 Bordes solos: contornos más gruesos y ruidosos. Los modelos RGB: máscaras visualmente similares.}
 \end{frame}
 
-% ── Slide 29: Conclusión — título ────────────────────────────────────────────
+% ── Slide 30: Conclusión — título ────────────────────────────────────────────
 \begin{frame}{Conclusión}
 \centering
 \vspace{1em}
 {\Large Tres contribuciones arquitectónicas.\\[0.5em] Un resultado competitivo.}
 \end{frame}
 
-% ── Slide 30: Lo que hicimos ──────────────────────────────────────────────────
+% ── Slide 31: Lo que hicimos ──────────────────────────────────────────────────
 \begin{frame}{Conclusión: Lo que Hicimos}
 \begin{itemize}
     \item Encoder dual U-Net: RGB + mapa de bordes Canny
@@ -632,7 +653,7 @@ Bordes solos: contornos más gruesos y ruidosos. Los modelos RGB: máscaras visu
 \end{alertblock}
 \end{frame}
 
-% ── Slide 31: Lo que logramos ─────────────────────────────────────────────────
+% ── Slide 32: Lo que logramos ─────────────────────────────────────────────────
 \begin{frame}{Conclusión: Lo que Logramos}
 \begin{itemize}
     \item \textbf{0.9530 IoU} — empatado con el mejor baseline
@@ -643,7 +664,7 @@ Bordes solos: contornos más gruesos y ruidosos. Los modelos RGB: máscaras visu
 \end{itemize}
 \end{frame}
 
-% ── Slide 32: Gracias ─────────────────────────────────────────────────────────
+% ── Slide 33: Gracias ─────────────────────────────────────────────────────────
 \begin{frame}{}
 \centering
 \vspace{2em}

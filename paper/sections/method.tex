@@ -9,7 +9,7 @@ We propose a dual-encoder segmentation architecture that fuses two complementary
 \resizebox{\columnwidth}{!}{%
     \input{figures/architecture.tikz}
 }
-\caption{Proposed dual-encoder architecture. Blue: RGB encoder (Enc-A). Red: Edge encoder (Enc-B). Orange: Cross-attention fusion modules with learnable gates $\alpha_1$, $\alpha_2$. Purple: fused skip projections ($1{\times}1$ conv). Green: decoder. Dashed arrows indicate edge skip connections concatenated with RGB skips before projection.}
+\caption{Proposed dual-encoder architecture. Two parallel encoders process RGB and Canny edge maps. Cross-attention modules (orange) at stage 4 ($32^2$, 256ch) and bottleneck ($16^2$, 512ch) let RGB features query edge features. Dashed lines show skip connections from both encoders to each decoder stage.}
 \label{fig:architecture}
 \end{figure}
 

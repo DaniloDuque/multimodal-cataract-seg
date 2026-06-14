@@ -24,12 +24,12 @@
 \@writefile{toc}{\contentsline {section}{\numberline {III}Proposed Method}{2}{section.3}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-A}}Overview}{2}{subsection.3.1}\protected@file@percent }
 \citation{vaswani2017attention}
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Proposed dual-encoder architecture. Blue: RGB encoder (Enc-A). Red: Edge encoder (Enc-B). Orange: Cross-attention fusion modules with learnable gates $\alpha _1$, $\alpha _2$. Purple: fused skip projections ($1{\times }1$ conv). Green: decoder. Dashed arrows indicate edge skip connections concatenated with RGB skips before projection.}}{3}{figure.1}\protected@file@percent }
-\newlabel{fig:architecture}{{1}{3}{Proposed dual-encoder architecture. Blue: RGB encoder (Enc-A). Red: Edge encoder (Enc-B). Orange: Cross-attention fusion modules with learnable gates $\alpha _1$, $\alpha _2$. Purple: fused skip projections ($1{\times }1$ conv). Green: decoder. Dashed arrows indicate edge skip connections concatenated with RGB skips before projection}{figure.1}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Proposed dual-encoder architecture. Two parallel encoders process RGB and Canny edge maps. Cross-attention modules (orange) at stage 4 ($32^2$, 256ch) and bottleneck ($16^2$, 512ch) let RGB features query edge features. Dashed lines show skip connections from both encoders to each decoder stage.}}{3}{figure.1}\protected@file@percent }
+\newlabel{fig:architecture}{{1}{3}{Proposed dual-encoder architecture. Two parallel encoders process RGB and Canny edge maps. Cross-attention modules (orange) at stage 4 ($32^2$, 256ch) and bottleneck ($16^2$, 512ch) let RGB features query edge features. Dashed lines show skip connections from both encoders to each decoder stage}{figure.1}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-B}}Input Representations}{3}{subsection.3.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-C}}Dual-Encoder Architecture}{3}{subsection.3.3}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Sample anterior segment images (top) and their corresponding Canny edge maps (bottom, $t_1{=}50$, $t_2{=}150$). The edge stream makes lens and corneal boundaries geometrically explicit even when color contrast is low.}}{3}{figure.2}\protected@file@percent }
 \newlabel{fig:canny}{{2}{3}{Sample anterior segment images (top) and their corresponding Canny edge maps (bottom, $t_1{=}50$, $t_2{=}150$). The edge stream makes lens and corneal boundaries geometrically explicit even when color contrast is low}{figure.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-C}}Dual-Encoder Architecture}{3}{subsection.3.3}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-D}}Cross-Attention Fusion Module}{3}{subsection.3.4}\protected@file@percent }
 \citation{cataractseg2023roboflow}
 \citation{grammatikopoulou2021cadis}

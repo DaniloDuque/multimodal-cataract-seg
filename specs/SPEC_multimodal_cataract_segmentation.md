@@ -346,7 +346,7 @@ The proposed model achieves competitive performance with all strong baselines, m
 - **Duration:** 20 minutes, all members participate equally
 - **Theme:** Metropolis (Beamer), `aspectratio=169`
 - **Language:** Spanish
-- **Total slides:** 32
+- **Total slides:** 33
 
 ### Slide distribution
 
@@ -355,9 +355,9 @@ The proposed model achieves competitive performance with all strong baselines, m
 | 1–2 | Portada / Agenda | — | Title, outline |
 | 3–7 | Fundamentos | — | U-Net, Atención, Self/Cross-Attention, Canny, IoU/Dice |
 | 8–13 | Motivación | Caleb | Problem, RGB limitations, multimodal segmentation, related work |
-| 14–21 | Arquitectura | Desireé | Architecture overview, input representations, Canny viz, dual encoders, cross-attention, gate, multi-scale fusion, training |
-| 22–28 | Experimentos | Danilo | Dataset, metrics, quantitative results, IoU plot, loss curves, val IoU, qualitative predictions |
-| 29–32 | Conclusión | — | Summary, contributions, results, closing |
+| 14–22 | Arquitectura | Desireé | Architecture overview, full flow, input representations, Canny viz, dual encoders, cross-attention, gate, multi-scale fusion, training |
+| 23–29 | Experimentos | Danilo | Dataset, metrics, quantitative results, IoU plot, loss curves, val IoU, qualitative predictions |
+| 30–33 | Conclusión | — | Summary, contributions, results, closing |
 
 ### Slide list
 1. Título
@@ -374,24 +374,25 @@ The proposed model achieves competitive performance with all strong baselines, m
 12. Trabajo Relacionado — Fusión
 13. Brecha que llenamos
 14. Arquitectura propuesta — Vista general
-15. Representaciones de entrada
-16. ¿Cómo se ve el mapa de bordes Canny?
-17. Encoders duales
-18. Módulo de Cross-Attention
-19. Gate aprendible
-20. Fusión multi-escala
-21. Entrenamiento
-22. Dataset
-23. Métricas (tabla)
-24. Resultados cuantitativos
-25. Gráfico IoU
-26. Curvas de pérdida
-27. IoU de validación por época
-28. Predicciones cualitativas
-29. Conclusión — título
-30. Lo que hicimos
-31. Lo que logramos
-32. Gracias
+15. Flujo completo del modelo
+16. Representaciones de entrada
+17. ¿Cómo se ve el mapa de bordes Canny?
+18. Encoders duales
+19. Módulo de Cross-Attention
+20. Gate aprendible
+21. Fusión multi-escala
+22. Entrenamiento
+23. Dataset
+24. Métricas (tabla)
+25. Resultados cuantitativos
+26. Gráfico IoU
+27. Curvas de pérdida
+28. IoU de validación por época
+29. Predicciones cualitativas
+30. Conclusión — título
+31. Lo que hicimos
+32. Lo que logramos
+33. Gracias
 
 ---
 
@@ -415,7 +416,7 @@ The proposed model achieves competitive performance with all strong baselines, m
   - `figures/loss_curves.pdf` ✅
   - `figures/val_iou_curves.pdf` ✅
   - `figures/qualitative_predictions.pdf` ✅
-- [x] Beamer presentation ✅ Done (`presentation/slides.tex`, 32 slides, Spanish, Metropolis theme)
+- [x] Beamer presentation ✅ Done (`presentation/slides.tex`, 33 slides, Spanish, Metropolis theme)
 - [x] Added fundamentals slides (U-Net, Attention, Canny, IoU/Dice) before motivation section
 - [x] Fixed slide overflow issues — reduced TikZ scales, removed excess spacing, shrunk oversized images
 - [x] Add Canny visualization to notebook: show side-by-side RGB vs Canny edge map for 3–4 dataset images so readers understand what the edge stream looks like in practice ✅ Done — cell in notebook, figure in paper (method.tex), slide in presentation
