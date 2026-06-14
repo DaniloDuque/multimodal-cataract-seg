@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.3.22)  13 JUN 2026 13:55
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.3.22)  13 JUN 2026 18:44
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -774,22 +774,26 @@ LaTeX Font Info:    Trying to load font information for U+msb on input line 9.
 
 (/usr/local/texlive/2026/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-)) [1{/usr/local/texlive/2026/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/us
-r/local/texlive/2026/texmf-dist/fonts/enc/dvips/base/8r.enc}
+) [1{/usr/local/texlive/2026/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/usr
+/local/texlive/2026/texmf-dist/fonts/enc/dvips/base/8r.enc}
 
 
-] (./sections/related_work.tex)
+]) (./sections/related_work.tex)
 (./sections/method.tex (./figures/architecture.tikz)
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
 [2]
-<figures/canny_visualization.pdf, id=161, 833.47997pt x 428.5611pt>
+<figures/canny_visualization.pdf, id=160, 833.47997pt x 428.5611pt>
 File: figures/canny_visualization.pdf Graphic file (type pdf)
 <use figures/canny_visualization.pdf>
 Package pdftex.def Info: figures/canny_visualization.pdf  used on input line 26
 .
 (pdftex.def)             Requested size: 252.0pt x 129.56982pt.
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
 
 Underfull \hbox (badness 6775) in paragraph at lines 39--41
 \T1/ptm/m/n/10 attention [[]7[]]. Both fea-ture maps are re-shaped from
@@ -808,51 +812,93 @@ Overfull \hbox (4.86241pt too wide) in paragraph at lines 25--35
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
+[4]
 LaTeX Font Info:    Trying to load font information for T1+pcr on input line 57
 .
-(/usr/local/texlive/2026/texmf-dist/tex/latex/psnfss/t1pcr.fd
+ (/usr/local/texlive/2026/texmf-dist/tex/latex/psnfss/t1pcr.fd
 File: t1pcr.fd 2001/06/04 font definitions for T1/pcr.
-))
-(./sections/results.tex
-Underfull \hbox (badness 10000) in paragraph at lines 57--1
+)
+Underfull \hbox (badness 10000) in paragraph at lines 57--58
 []\T1/ptm/m/n/10 Models are im-ple-mented in Py-Torch us-ing
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 57--1
+Underfull \hbox (badness 10000) in paragraph at lines 57--58
 \T1/pcr/m/n/10 segmentation-models-pytorch \T1/ptm/m/n/10 for the U-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 57--1
+Underfull \hbox (badness 10000) in paragraph at lines 57--58
 \T1/ptm/m/n/10 Net back-bone. Cross-attention is im-ple-mented with
  []
 
-[4]
+
+Underfull \hbox (badness 1400) in paragraph at lines 57--58
+\T1/ptm/m/n/10 as the loss curves showed smooth con-ver-gence with-out
+ []
+
+
+Underfull \hbox (badness 1418) in paragraph at lines 57--58
+\T1/ptm/m/n/10 BCE pro-vides strong pixel-level gra-di-ents that help the
+ []
+
+
+Underfull \hbox (badness 3635) in paragraph at lines 57--58
+\T1/ptm/m/n/10 im-bal-ance be-tween fore-ground and back-ground re-gions
+ []
+
+
+Underfull \hbox (badness 4205) in paragraph at lines 57--58
+\T1/ptm/m/n/10 by di-rectly op-ti-miz-ing the over-lap be-tween pre-dic-tion
+ []
+
+
+Underfull \hbox (badness 1383) in paragraph at lines 57--58
+\T1/ptm/m/n/10 and ground truth. The two losses are summed with-out
+ []
+
+
+Underfull \hbox (badness 2158) in paragraph at lines 57--58
+\T1/ptm/m/n/10 weight-ing, as this com-bi-na-tion has been shown to be
+ []
+
+) (./sections/results.tex
 <figures/iou_comparison.pdf, id=241, 498.2891pt x 280.57147pt>
 File: figures/iou_comparison.pdf Graphic file (type pdf)
 <use figures/iou_comparison.pdf>
 Package pdftex.def Info: figures/iou_comparison.pdf  used on input line 27.
 (pdftex.def)             Requested size: 214.20154pt x 120.60912pt.
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
 <figures/loss_curves.pdf, id=243, 1004.20985pt x 352.34511pt>
 File: figures/loss_curves.pdf Graphic file (type pdf)
 <use figures/loss_curves.pdf>
 Package pdftex.def Info: figures/loss_curves.pdf  used on input line 38.
 (pdftex.def)             Requested size: 252.0pt x 88.414pt.
-<figures/val_iou_curves.pdf, id=245, 570.58984pt x 280.0751pt>
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[5]
+<figures/val_iou_curves.pdf, id=258, 570.58984pt x 280.0751pt>
 File: figures/val_iou_curves.pdf Graphic file (type pdf)
 <use figures/val_iou_curves.pdf>
 Package pdftex.def Info: figures/val_iou_curves.pdf  used on input line 47.
 (pdftex.def)             Requested size: 226.79846pt x 111.3229pt.
-<figures/qualitative_predictions.pdf, id=247, 1396.29356pt x 642.24438pt>
+<figures/qualitative_predictions.pdf, id=260, 1396.29356pt x 642.24438pt>
 File: figures/qualitative_predictions.pdf Graphic file (type pdf)
 <use figures/qualitative_predictions.pdf>
 Package pdftex.def Info: figures/qualitative_predictions.pdf  used on input lin
 e 58.
 (pdftex.def)             Requested size: 252.0pt x 115.90279pt.
-) (./sections/conclusion.tex [5 <./figures/iou_comparison.pdf> <./figures/loss_
-curves.pdf> <./figures/val_iou_curves.pdf> <./figures/qualitative_predictions.p
-df>]) (out/main.bbl)
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[6 <./figures/iou_comparison.pdf> <./figures/loss_curves.pdf> <./figures/val_io
+u_curves.pdf> <./figures/qualitative_predictions.pdf>] [7])
+(./sections/conclusion.tex) (out/main.bbl)
 
 ** Conference Paper **
 Before submitting the final camera ready copy, remember to:
@@ -864,47 +910,46 @@ Before submitting the final camera ready copy, remember to:
  uses only Type 1 fonts and that every step in the generation
  process uses the appropriate paper size.
 
-[6] (out/main.aux)
+[8] (out/main.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 1C235E2317C17A06DB1EC0CF171D6C2C;4262.
+(rerunfilecheck)             Checksum: 427372C3C0DD020DD1BC5AFC80EF4C97;4403.
  ) 
 Here is how much of TeX's memory you used:
- 23383 strings out of 467525
- 440024 string characters out of 5418982
- 877987 words of memory out of 5000000
- 51809 multiletter control sequences out of 15000+600000
+ 23391 strings out of 467525
+ 440107 string characters out of 5418982
+ 877864 words of memory out of 5000000
+ 51811 multiletter control sequences out of 15000+600000
  754528 words of font info for 172 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  84i,11n,104p,1915b,885s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb
 ></usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb>
-</usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmex7.p
-fb></usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pf
-b></usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb>
-</usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></
-usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></us
-r/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/
-local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/loc
-al/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/
-texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/tex
-live/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texliv
-e/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive
-/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2
-026/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/202
-6/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive
-/2026/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2026/te
-xmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2026/texmf-dist/f
-onts/type1/urw/times/utmbi8a.pfb></usr/local/texlive/2026/texmf-dist/fonts/type
-1/urw/times/utmr8a.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/urw/time
-s/utmri8a.pfb>
-Output written on out/main.pdf (6 pages, 1102748 bytes).
+</usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><
+/usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></u
+sr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr
+/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/l
+ocal/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/loc
+al/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/
+texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/tex
+live/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texliv
+e/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive/2
+026/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/20
+26/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2026
+/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2026/t
+exmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/20
+26/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2026/texmf
+-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2026/texmf-dist/font
+s/type1/urw/times/utmbi8a.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/u
+rw/times/utmr8a.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/urw/times/u
+tmri8a.pfb>
+Output written on out/main.pdf (8 pages, 1110762 bytes).
 PDF statistics:
- 575 PDF objects out of 1000 (max. 8388607)
- 313 compressed objects within 4 object streams
- 57 named destinations out of 1000 (max. 500000)
- 262 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 590 PDF objects out of 1000 (max. 8388607)
+ 328 compressed objects within 4 object streams
+ 63 named destinations out of 1000 (max. 500000)
+ 270 words of extra memory for PDF output out of 10000 (max. 10000000)
 

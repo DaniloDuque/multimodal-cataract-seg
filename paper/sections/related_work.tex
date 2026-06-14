@@ -2,7 +2,7 @@
 
 \subsection{Anterior Segment and Cataract Segmentation}
 
-Encoder-decoder architectures have become the standard approach for medical image segmentation since Ronneberger et al.\ introduced U-Net \cite{ronneberger2015unet}. U-Net uses a downsampling path followed by a symmetric upsampling path, which enables precise localization even with very few annotated images. This architecture has been widely adopted in ophthalmic segmentation because it preserves fine spatial detail through skip connections.
+Encoder-decoder architectures have become the standard approach for medical image segmentation since Ronneberger et al.\ introduced U-Net \cite{ronneberger2015unet}. U-Net uses a downsampling path followed by a symmetric upsampling path connected by skip connections, which enables precise localization even with very few annotated images. The skip connections transfer fine spatial detail from the encoder directly to the corresponding decoder stages, addressing the loss of spatial resolution that occurs during downsampling. This design has been widely adopted in ophthalmic segmentation because it preserves the fine anatomical boundaries needed for accurate delineation of corneal and lens structures.
 
 Surgical scene understanding in cataract procedures presents additional challenges due to reflections, occlusions from instruments, and changes in illumination during surgery. The CaDIS dataset \cite{grammatikopoulou2021cadis} addressed this gap by providing annotated frames of cataract surgery videos covering anatomical structures and surgical instruments, establishing a benchmark for multi-class segmentation in this domain.
 

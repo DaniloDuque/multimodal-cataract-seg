@@ -30,7 +30,7 @@ Given an input image $\mathbf{I} \in \mathbb{R}^{H \times W \times 3}$, two repr
 
 \subsection{Dual-Encoder Architecture}
 
-Both streams are processed by independent U-Net encoders sharing the same ResNet-34 architecture but no weights. The encoder follows the standard downsampling path of five resolution stages, producing feature maps at channel depths 64, 64, 128, 256, and 512 respectively. For a $512{\times}512$ input, the bottleneck feature map has spatial resolution $16{\times}16$.
+Both streams are processed by independent U-Net encoders sharing the same ResNet-34 architecture but no weights. ResNet-34 consists of four residual blocks with channel depths 64, 64, 128, and 256, followed by an average pooling layer that produces 512-channel features. Each residual block uses bottleneck layers with batch normalization and ReLU activations, and skip connections that add the block input to its output, enabling training of deeper networks without vanishing gradients. The encoder follows the standard downsampling path of five resolution stages, producing feature maps at channel depths 64, 64, 128, 256, and 512 respectively. For a $512{\times}512$ input, the bottleneck feature map has spatial resolution $16{\times}16$.
 
 Let $\mathbf{F}_A^{(s)}$ and $\mathbf{F}_B^{(s)}$ denote the feature maps from the RGB and edge encoders at stage $s$, with the bottleneck at stage 5 ($C=512$) and stage 4 at ($C=256$, spatial $32{\times}32$).
 
@@ -43,6 +43,10 @@ The bottleneck features are fused via multi-head cross-attention~\cite{vaswani20
 \end{equation}
 %
 Intuitively, this attention operation lets each spatial location in the RGB feature map ``look at'' all spatial locations in the edge feature map and decide which boundary cues are relevant at that position. The queries $\mathbf{Q}$ from the RGB features represent ``what boundary information do I need here?'' while the keys $\mathbf{K}$ from the edge features represent ``what boundaries are present at each location?'' The dot product $\mathbf{Q}\mathbf{K}^\top$ produces an attention map that determines how much each edge location should influence each RGB location.
+
+The multi-head mechanism applies this attention computation in parallel across $h=8$ independent heads. Each head learns a different projection of the queries, keys, and values, allowing the model to attend to different types of cross-modal relationships simultaneously. The outputs of all heads are concatenated and projected back to the original feature dimension, producing the final attention output. This multi-head design has been shown to improve the expressiveness of attention mechanisms by capturing diverse relational patterns.
+
+The attention output is then added to the original RGB features through a residual connection, followed by layer normalization. The residual connection ensures that the RGB features are not overwritten but rather enriched by the edge information, preserving the original photometric representation while incorporating geometric cues.
 
 where $\alpha = \sigma(\theta)$ is a learnable scalar gate with $\theta$ initialized to $-4$, giving $\alpha \approx 0.02$ at the start of training. This allows the model to begin as a near-pure RGB U-Net and gradually learn to incorporate edge information only when it is beneficial ,  an important safeguard given the noisy nature of Canny edge maps. Intuitively, the gate acts as a volume knob for edge information: it starts at zero so the model is not forced to use potentially noisy edge features, and training can turn it up only if the edge cues consistently improve the segmentation.
 
@@ -62,7 +66,9 @@ This propagates geometric boundary cues through the full decoder path rather tha
 
 \subsection{Decoder and Output}
 
-The decoder follows the standard U-Net expanding path with bilinear upsampling and two $3{\times}3$ convolutional blocks at each stage. The fused skip connections $\hat{\mathbf{F}}^{(s)}$ replace the plain RGB skips at each resolution level. A final $1{\times}1$ convolution with sigmoid activation produces the binary segmentation mask $\hat{\mathbf{M}} \in [0,1]^{H \times W}$.
+The decoder follows the standard U-Net expanding path with bilinear upsampling and two $3{\times}3$ convolutional blocks at each stage. At each decoder level, the upsampled feature map from the previous stage is concatenated with the corresponding fused skip connection $\hat{\mathbf{F}}^{(s)}$, then passed through two convolutions with batch normalization and ReLU activation. This design follows the original U-Net formulation and ensures that fine spatial details from the encoder are combined with semantic information from the decoder at every resolution.
+
+The fused skip connections $\hat{\mathbf{F}}^{(s)}$ replace the plain RGB skips at each resolution level. A final $1{\times}1$ convolution with sigmoid activation produces the binary segmentation mask $\hat{\mathbf{M}} \in [0,1]^{H \times W}$.
 
 \subsection{Training Objective}
 
@@ -72,4 +78,16 @@ The model is trained with a combined loss:
   \mathcal{L} = \mathcal{L}_\text{BCE} + \mathcal{L}_\text{Dice}
 \end{equation}
 %
-where $\mathcal{L}_\text{BCE}$ is binary cross-entropy and $\mathcal{L}_\text{Dice} = 1 - \frac{2\sum \hat{M} \cdot M}{\sum \hat{M} + \sum M}$. This combination penalizes both pixel-level errors and overlap errors, which is standard practice in medical image segmentation.
+where $\mathcal{L}_\text{BCE}$ is binary cross-entropy and $\mathcal{L}_\text{Dice}$ is the Dice loss. The BCE loss is computed as:
+%
+\begin{equation}
+\mathcal{L}_\text{BCE} = -\frac{1}{N}\sum_{i=1}^{N} \left[ M_i \log(\hat{M}_i) + (1-M_i)\log(1-\hat{M}_i) \right]
+\end{equation}
+%
+where $N$ is the total number of pixels. The Dice loss, derived from the Dice coefficient, directly optimizes the overlap between the prediction and the ground truth:
+%
+\begin{equation}
+\mathcal{L}_\text{Dice} = 1 - \frac{2\sum_{i} \hat{M}_i \cdot M_i}{\sum_{i} \hat{M}_i + \sum_{i} M_i}
+\end{equation}
+%
+The two losses are summed without weighting. BCE provides strong gradients for every pixel independently, which helps the model converge from random initialization. Dice loss focuses on the overall segmentation quality and is less sensitive to class imbalance, as it treats the foreground and background regions symmetrically. Their combination has been widely adopted in medical segmentation because it addresses both pixel-wise accuracy and region-level overlap.

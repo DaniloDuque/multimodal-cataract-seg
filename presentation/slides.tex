@@ -20,6 +20,7 @@
 \begin{document}
 
 % ── Secciones (deben ir antes del TOC) ───────────────────────────────────────
+\section{Fundamentos}
 \section{Motivación}
 \section{Trabajo Relacionado}
 \section{Método Propuesto}
@@ -37,10 +38,161 @@
 \end{frame}
 
 % ══════════════════════════════════════════════════════════════════════════════
-%  CALEB — Slides 3–9  (~7 min)
+%  FUNDAMENTOS — Slides 3–7  (~5 min)
 % ══════════════════════════════════════════════════════════════════════════════
 
-% ── Slide 3: El problema clínico ─────────────────────────────────────────────
+% ── Slide 3: ¿Qué es U-Net? ─────────────────────────────────────────────────
+\begin{frame}{¿Qué es U-Net?}
+\begin{columns}[T]
+\column{0.58\textwidth}
+Arquitectura \textbf{encoder-decoder} para segmentación:
+\begin{itemize}
+    \item \textbf{Encoder}: reduce resolución, aumenta canales. Captura \textbf{qué} hay.
+    \item \textbf{Decoder}: aumenta resolución, reduce canales. Recupera \textbf{dónde}.
+    \item \textbf{Skip connections}: conectan encoder y decoder. \textbf{Preservan el detalle fino} que se pierde al submuestrear.
+\end{itemize}
+
+\column{0.38\textwidth}
+\centering
+\begin{tikzpicture}[font=\tiny, scale=0.55, transform shape]
+    \fill[blue!15, rounded corners=3pt] (0,0) rectangle (1.5,3);
+    \fill[red!15, rounded corners=3pt] (3,0) rectangle (4.5,3);
+    \fill[gray!15, rounded corners=3pt] (1.5,1.2) rectangle (3,1.8);
+    \node[rotate=90] at (0.75,1.5) {\textbf{Encoder}};
+    \node[rotate=-90] at (3.75,1.5) {\textbf{Decoder}};
+    \node at (2.25,1.5) {\textbf{Botella}};
+    \draw[blue!60, dashed, thick] (1.5,2.8) -- (3,2.8);
+    \draw[blue!60, dashed, thick] (1.5,2.0) -- (3,2.0);
+    \draw[blue!60, dashed, thick] (1.5,0.8) -- (3,0.8);
+    \draw[-{Stealth}, thick] (0,0) -- (0,3);
+    \draw[-{Stealth}, thick] (1.5,1.5) -- (3,1.5);
+    \draw[-{Stealth}, thick] (4.5,3) -- (4.5,0);
+    \node[align=center] at (0,-0.5) {Imagen\\$512^2$};
+    \node[align=center] at (4.5,-0.5) {Máscara};
+\end{tikzpicture}
+\end{columns}
+\begin{block}{Clave}
+Usamos U-Net como backbone porque sus skip connections preservan los bordes anatómicos finos para segmentar córnea y cristalino.
+\end{block}
+\end{frame}
+
+% ── Slide 4: ¿Qué es Atención? ──────────────────────────────────────────────
+\begin{frame}{¿Qué es Atención (Attention)?}
+\begin{columns}[T]
+\column{0.55\textwidth}
+Mecanismo que permite a un modelo \textbf{enfocarse} en las partes relevantes.
+
+\textbf{Tres componentes:}
+\begin{itemize}
+    \item \textbf{Q (Query)}: ``¿qué información necesito?''
+    \item \textbf{K (Key)}: ``¿qué información tengo?''
+    \item \textbf{V (Value)}: ``el contenido que voy a entregar''
+\end{itemize}
+\vspace{0.3em}
+\textbf{Cálculo:} se compara Q con cada K, se obtiene un peso de relevancia y se combinan los V.
+
+\column{0.42\textwidth}
+\begin{equation*}
+\text{Atención}(Q,K,V) = \text{softmax}\!\left(\frac{QK^\top}{\sqrt{d}}\right)V
+\end{equation*}
+\end{columns}
+\vspace{0.3em}
+\begin{block}{Analogía}
+Como buscar en Google: tu \textbf{consulta} (Q) se compara con \textbf{claves} (K) de páginas web y recibes los \textbf{contenidos} (V) más relevantes.
+\end{block}
+\end{frame}
+
+% ── Slide 5: Self-Attention vs Cross-Attention ──────────────────────────────
+\begin{frame}{Self-Attention vs Cross-Attention}
+\begin{columns}[T]
+\column{0.48\textwidth}
+\centering
+\textbf{Self-Attention}
+\begin{tikzpicture}[font=\footnotesize]
+    \node[draw, rounded corners, fill=blue!20, minimum width=2.2cm, minimum height=0.5cm] (q) {Q};
+    \node[draw, rounded corners, fill=blue!20, minimum width=2.2cm, minimum height=0.5cm, below=0.2 of q] (k) {K};
+    \node[draw, rounded corners, fill=blue!20, minimum width=2.2cm, minimum height=0.5cm, below=0.2 of k] (v) {V};
+    \node[left=0.2 of q, font=\footnotesize] {Misma entrada};
+    \draw[dashed] (q.west) -- ++(-0.6,0);
+    \node[draw, rounded corners, fill=gray!20, minimum width=2.2cm, minimum height=0.5cm, below=0.3 of v] (out) {Salida};
+    \draw[->] (v) -- (out);
+    \node[font=\tiny, align=center, below=0.1 of out] {Ej: ``I love cats'' $\rightarrow$\\cada palabra se atiende a sí misma};
+\end{tikzpicture}
+
+\column{0.48\textwidth}
+\centering
+\textbf{Cross-Attention}
+\begin{tikzpicture}[font=\footnotesize]
+    \node[draw, rounded corners, fill=blue!20, minimum width=2.2cm, minimum height=0.5cm] (q) {Q};
+    \node[draw, rounded corners, fill=red!20, minimum width=2.2cm, minimum height=0.5cm, below=0.2 of q] (k) {K};
+    \node[draw, rounded corners, fill=red!20, minimum width=2.2cm, minimum height=0.5cm, below=0.2 of k] (v) {V};
+    \node[left=0.2 of q, font=\footnotesize] {Entrada A};
+    \node[left=0.2 of k, font=\footnotesize] {Entrada B};
+    \draw[dashed] (q.west) -- ++(-0.6,0);
+    \draw[dashed] (k.west) -- ++(-0.6,0);
+    \node[draw, rounded corners, fill=gray!20, minimum width=2.2cm, minimum height=0.5cm, below=0.3 of v] (out) {Salida};
+    \draw[->] (v) -- (out);
+    \node[font=\tiny, align=center, below=0.1 of out] {Ej: nuestro modelo\\RGB $\rightarrow$ Q, Bordes $\rightarrow$ K,V};
+\end{tikzpicture}
+\end{columns}
+\vspace{0.3em}
+\begin{alertblock}{En nuestro modelo}
+El encoder RGB genera \textbf{Q}, el encoder de bordes genera \textbf{K y V}. Los features RGB ``preguntan'' dónde están los bordes y enriquecen su representación.
+\end{alertblock}
+\end{frame}
+
+% ── Slide 6: ¿Qué es Canny? ─────────────────────────────────────────────────
+\begin{frame}{¿Qué es el detector de bordes Canny?}
+Transforma una imagen a color en un \textbf{mapa de bordes}.
+\begin{enumerate}
+    \item \textbf{Suavizar}: filtro Gaussiano para eliminar ruido.
+    \item \textbf{Gradiente}: en cada píxel, qué tan rápido cambia el brillo.
+    \item \textbf{Adelgazar}: solo los máximos locales en la dirección del gradiente.
+    \item \textbf{Conectar bordes} con dos umbrales ($t_1=50$, $t_2=150$):
+    \begin{itemize}
+        \item $> t_2$: borde fuerte (se queda)
+        \item $< t_1$: se descarta
+        \item Entre $t_1$ y $t_2$: solo si conecta a un borde fuerte
+    \end{itemize}
+\end{enumerate}
+\vspace{0.3em}
+{\small Dos umbrales producen bordes \textbf{limpios y conectados}: eliminan ruido pero mantienen contornos relevantes.}
+\end{frame}
+
+% ── Slide 7: ¿Qué es IoU y Dice? ─────────────────────────────────────────────
+\begin{frame}{Métricas: IoU y Dice}
+\begin{columns}[T]
+\column{0.48\textwidth}
+\centering
+\textbf{IoU (Intersection over Union)}
+\begin{equation*}
+\text{IoU} = \frac{|\hat{M} \cap M|}{|\hat{M} \cup M|}
+\end{equation*}
+{\small Solapamiento / área total. 1 = perfecto, 0 = nada.}
+
+\includegraphics[width=0.55\textwidth]{../figures/iou_comparison.pdf}
+
+\column{0.48\textwidth}
+\centering
+\textbf{Dice}
+\begin{equation*}
+\text{Dice} = \frac{2|\hat{M} \cap M|}{|\hat{M}| + |M|}
+\end{equation*}
+{\small Pesa más el solapamiento. Equivalente a F1.}
+\vspace{0.5em}
+
+\begin{block}{Relación}
+IoU es más \textbf{conservador}: $\text{IoU} \leq \text{Dice}$. Si IoU=0.95, Dice$\approx$0.974.
+Ambos penalizan FP y FN.
+\end{block}
+\end{columns}
+\end{frame}
+
+% ══════════════════════════════════════════════════════════════════════════════
+%  CALEB — Slides 8–13  (~7 min)
+% ══════════════════════════════════════════════════════════════════════════════
+
+% ── Slide 8: El problema clínico ─────────────────────────────────────────────
 \begin{frame}{El Problema: Cataratas}
 \begin{itemize}
     \item Las cataratas afectan a más de \textbf{100 millones de personas} en el mundo
@@ -56,7 +208,7 @@ Segmentar automáticamente estas estructuras para graduación, planificación qu
 \end{block}
 \end{frame}
 
-% ── Slide 4: Por qué RGB no es suficiente ────────────────────────────────────
+% ── Slide 9: Por qué RGB no es suficiente ────────────────────────────────────
 \begin{frame}{¿Por qué RGB solo no es suficiente?}
 \begin{columns}
 \column{0.55\textwidth}
@@ -75,7 +227,7 @@ El color solo no alcanza para delinear los bordes del cristalino opacificado.
 \end{columns}
 \end{frame}
 
-% ── Slide 5: ¿Qué es segmentación multimodal? ────────────────────────────────
+% ── Slide 10: ¿Qué es segmentación multimodal? ────────────────────────────────
 \begin{frame}{¿Qué es Segmentación Multimodal?}
 \begin{block}{Idea central}
 Usar \textbf{múltiples representaciones} de la misma escena y \textbf{fusionarlas} para que el modelo vea más de lo que cualquier vista individual puede capturar.
@@ -98,7 +250,7 @@ Usar \textbf{múltiples representaciones} de la misma escena y \textbf{fusionarl
 \end{columns}
 \end{frame}
 
-% ── Slide 6: Trabajo Relacionado — Backbone ──────────────────────────────────
+% ── Slide 11: Trabajo Relacionado — Backbone ──────────────────────────────────
 \begin{frame}{Trabajo Relacionado: Segmentación Médica}
 \begin{itemize}
     \item \textbf{U-Net} \textit{[Ronneberger 2015]} — arquitectura encoder-decoder con skip connections
@@ -120,7 +272,7 @@ Usar \textbf{múltiples representaciones} de la misma escena y \textbf{fusionarl
 \end{itemize}
 \end{frame}
 
-% ── Slide 7: Trabajo Relacionado — Fusión ────────────────────────────────────
+% ── Slide 12: Trabajo Relacionado — Fusión ────────────────────────────────────
 \begin{frame}{Trabajo Relacionado: Fusión Multimodal}
 \begin{itemize}
     \item \textbf{Vaswani 2017} — ``Attention is All You Need''
@@ -141,7 +293,7 @@ Usar \textbf{múltiples representaciones} de la misma escena y \textbf{fusionarl
 \end{itemize}
 \end{frame}
 
-% ── Slide 8: Brecha que llenamos ─────────────────────────────────────────────
+% ── Slide 13: Brecha que llenamos ─────────────────────────────────────────────
 \begin{frame}{¿Dónde Encaja Nuestro Trabajo?}
 \centering
 \begin{tikzpicture}[font=\small, node distance=1.2cm]
@@ -159,13 +311,13 @@ Usar \textbf{múltiples representaciones} de la misma escena y \textbf{fusionarl
 \end{frame}
 
 % ══════════════════════════════════════════════════════════════════════════════
-%  DESIREÉ — Slides 9–16  (~7 min)
+%  DESIREÉ — Slides 14–21  (~7 min)
 % ══════════════════════════════════════════════════════════════════════════════
 
-% ── Slide 9: Vista general de la arquitectura ────────────────────────────────
+% ── Slide 14: Vista general de la arquitectura ────────────────────────────────
 \begin{frame}{Arquitectura Propuesta — Vista General}
 \centering
-\resizebox{0.88\textwidth}{!}{\input{../paper/figures/architecture.tikz}}
+\resizebox{0.72\textwidth}{!}{\input{../paper/figures/architecture.tikz}}
 \vspace{0.3em}
 \begin{columns}
 \column{0.5\textwidth}\centering
@@ -175,9 +327,9 @@ Usar \textbf{múltiples representaciones} de la misma escena y \textbf{fusionarl
 \end{columns}
 \end{frame}
 
-% ── Slide 10: Representaciones de entrada ────────────────────────────────────
+% ── Slide 15: Representaciones de entrada ────────────────────────────────────
 \begin{frame}{Representaciones de Entrada}
-\begin{columns}
+\begin{columns}[T]
 \column{0.5\textwidth}
 \textbf{Flujo RGB}
 \begin{itemize}
@@ -185,12 +337,11 @@ Usar \textbf{múltiples representaciones} de la misma escena y \textbf{fusionarl
     \item Redimensionada a $512 \times 512$
     \item Captura \textbf{color, textura, fotometría}
 \end{itemize}
-\vspace{0.5em}
+\vspace{0.3em}
 \textbf{Flujo de bordes}
 \begin{itemize}
     \item Filtro Canny: $t_1 = 50$, $t_2 = 150$
-    \item Aplicado a conversión en escala de grises
-    \item Replicado a 3 canales
+    \item Aplicado a escala de grises, replicado a 3 canales
     \item Captura \textbf{límites geométricos}
     \item Recalculado luego de augmentaciones
 \end{itemize}
@@ -198,23 +349,22 @@ Usar \textbf{múltiples representaciones} de la misma escena y \textbf{fusionarl
 \begin{block}{¿Por qué Canny?}
 La estructura de bordes explícita hace detectable el contorno del cristalino incluso cuando el contraste de color es bajo.
 \end{block}
-\vspace{0.5em}
+\vspace{0.3em}
 \centering
-Dos espacios de features heterogéneos\\de \textbf{una sola imagen} $\rightarrow$ fusión multimodal
+{\small Dos espacios de features heterogéneos de \textbf{una sola imagen} $\rightarrow$ fusión multimodal}
 \end{columns}
 \end{frame}
 
-% ── Slide 11: Visualización Canny ────────────────────────────────────────────
+% ── Slide 16: Visualización Canny ────────────────────────────────────────────
 \begin{frame}{¿Cómo se ve el mapa de bordes Canny?}
 \centering
-\includegraphics[width=0.92\textwidth]{../figures/canny_visualization.pdf}
-\vspace{0.3em}
+\includegraphics[width=0.7\textwidth]{../figures/canny_visualization.pdf}
 
-{\small \textbf{Fila superior:} imágenes RGB originales \quad \textbf{Fila inferior:} mapas de bordes Canny ($t_1{=}50$, $t_2{=}150$)}\\[0.2em]
+{\small \textbf{Fila superior:} imágenes RGB \quad \textbf{Fila inferior:} bordes Canny ($t_1{=}50$, $t_2{=}150$)}\\[0.1em]
 {\small Los bordes del cristalino y la córnea son geométricamente explícitos incluso cuando el contraste de color es bajo.}
 \end{frame}
 
-% ── Slide 12: Encoders duales ─────────────────────────────────────────────────
+% ── Slide 17: Encoders duales ─────────────────────────────────────────────────
 \begin{frame}{Encoders Duales}
 \begin{itemize}
     \item Dos encoders U-Net \textbf{independientes} — misma arquitectura ResNet-34, \textbf{sin pesos compartidos}
@@ -234,7 +384,7 @@ Los pesos separados permiten que cada encoder aprenda representaciones especiali
 \end{block}
 \end{frame}
 
-% ── Slide 12: Módulo de Cross-Attention ──────────────────────────────────────
+% ── Slide 18: Módulo de Cross-Attention ──────────────────────────────────────
 \begin{frame}{Módulo de Cross-Attention}
 \begin{columns}
 \column{0.55\textwidth}
@@ -260,7 +410,7 @@ Enriquece la representación fotométrica con información estructural geométri
 \end{columns}
 \end{frame}
 
-% ── Slide 13: Gate aprendible ─────────────────────────────────────────────────
+% ── Slide 19: Gate aprendible ─────────────────────────────────────────────────
 \begin{frame}{Gate Escalar Aprendible}
 \begin{columns}
 \column{0.55\textwidth}
@@ -285,7 +435,7 @@ Early Fusion fuerza ambas modalidades desde la época 1. El gate es selectivo.
 \end{columns}
 \end{frame}
 
-% ── Slide 14: Fusión multi-escala ─────────────────────────────────────────────
+% ── Slide 20: Fusión multi-escala ─────────────────────────────────────────────
 \begin{frame}{Fusión Multi-Escala}
 \textbf{Dos instancias de cross-attention:}
 \vspace{0.3em}
@@ -304,7 +454,7 @@ Los cues geométricos se propagan por \textbf{todo el camino de expansión}, no 
 \end{block}
 \end{frame}
 
-% ── Slide 15: Entrenamiento ───────────────────────────────────────────────────
+% ── Slide 21: Entrenamiento ───────────────────────────────────────────────────
 \begin{frame}{Configuración de Entrenamiento}
 \begin{columns}
 \column{0.48\textwidth}
@@ -337,10 +487,10 @@ lr $= 10^{-4}$, weight decay $= 10^{-2}$
 \end{frame}
 
 % ══════════════════════════════════════════════════════════════════════════════
-%  DANILO — Slides 16–23  (~6 min)
+%  DANILO — Slides 22–28  (~6 min)
 % ══════════════════════════════════════════════════════════════════════════════
 
-% ── Slide 16: Dataset ─────────────────────────────────────────────────────────
+% ── Slide 22: Dataset ─────────────────────────────────────────────────────────
 \begin{frame}{Dataset: Cataract-Seg}
 \begin{columns}
 \column{0.5\textwidth}
@@ -382,7 +532,7 @@ U-Net (Fusión T.) & RGB+bordes concat. \\
 \end{columns}
 \end{frame}
 
-% ── Slide 17: Métricas ────────────────────────────────────────────────────────
+% ── Slide 23: Métricas ────────────────────────────────────────────────────────
 \begin{frame}{Métricas de Evaluación}
 \begin{itemize}
     \item \textbf{IoU (Intersection over Union)} — métrica primaria
@@ -399,7 +549,7 @@ U-Net (Fusión T.) & RGB+bordes concat. \\
 \end{itemize}
 \end{frame}
 
-% ── Slide 18: Resultados cuantitativos ───────────────────────────────────────
+% ── Slide 24: Resultados cuantitativos ───────────────────────────────────────
 \begin{frame}{Resultados Cuantitativos}
 \centering
 \begin{tabular}{lcc}
@@ -420,7 +570,7 @@ U-Net (Fusión T.)      & \textbf{0.9532} & \textbf{0.9761} \\
 \end{itemize}
 \end{frame}
 
-% ── Slide 19: Gráfico IoU ─────────────────────────────────────────────────────
+% ── Slide 25: Gráfico IoU ─────────────────────────────────────────────────────
 \begin{frame}{Comparación de IoU en Test}
 \centering
 \includegraphics[width=0.75\textwidth]{../paper/figures/iou_comparison.pdf}
@@ -429,7 +579,7 @@ U-Net (Fusión T.)      & \textbf{0.9532} & \textbf{0.9761} \\
 {\small Eje Y desde 0.85 para ampliar diferencias. La brecha principal es entre bordes solos y los modelos RGB.}
 \end{frame}
 
-% ── Slide 20: Curvas de pérdida ──────────────────────────────────────────────
+% ── Slide 26: Curvas de pérdida ──────────────────────────────────────────────
 \begin{frame}{Curvas de Pérdida}
 \centering
 \includegraphics[width=0.85\textwidth]{../paper/figures/loss_curves.pdf}
@@ -438,7 +588,7 @@ U-Net (Fusión T.)      & \textbf{0.9532} & \textbf{0.9761} \\
 {\small Pérdida BCE+Dice de entrenamiento (izq.) y validación (der.) — 100 épocas. Todos los modelos convergen sin divergencia.}
 \end{frame}
 
-% ── Slide 21: Curvas de IoU de validación ────────────────────────────────────
+% ── Slide 27: Curvas de IoU de validación ────────────────────────────────────
 \begin{frame}{IoU de Validación por Época}
 \centering
 \includegraphics[width=0.82\textwidth]{../paper/figures/val_iou_curves.pdf}
@@ -447,23 +597,23 @@ U-Net (Fusión T.)      & \textbf{0.9532} & \textbf{0.9761} \\
 {\small El modelo propuesto y Fusión Temprana siguen trayectorias paralelas. Bordes solos: meseta más baja.}
 \end{frame}
 
-% ── Slide 22: Predicciones cualitativas ──────────────────────────────────────
+% ── Slide 28: Predicciones cualitativas ──────────────────────────────────────
 \begin{frame}{Predicciones Cualitativas}
 \centering
-\includegraphics[width=0.95\textwidth]{../paper/figures/qualitative_predictions.pdf}
+\includegraphics[width=0.82\textwidth]{../paper/figures/qualitative_predictions.pdf}
 
-{\small \textbf{Columnas:} RGB — GT — U-Net RGB — U-Net Bordes — Fusión T. — \textbf{Propuesto}}\\[0.2em]
-{\small Bordes solos: contornos más gruesos y ruidosos. Los modelos RGB: máscaras visualmente similares.}
+{\small \textbf{Columnas:} RGB — GT — U-Net RGB — U-Net Bordes — Fusión T. — \textbf{Propuesto}\\[0.1em]
+Bordes solos: contornos más gruesos y ruidosos. Los modelos RGB: máscaras visualmente similares.}
 \end{frame}
 
-% ── Slide 23: Conclusión — título ────────────────────────────────────────────
+% ── Slide 29: Conclusión — título ────────────────────────────────────────────
 \begin{frame}{Conclusión}
 \centering
-\vspace{2em}
+\vspace{1em}
 {\Large Tres contribuciones arquitectónicas.\\[0.5em] Un resultado competitivo.}
 \end{frame}
 
-% ── Slide 24: Lo que hicimos ──────────────────────────────────────────────────
+% ── Slide 30: Lo que hicimos ──────────────────────────────────────────────────
 \begin{frame}{Conclusión: Lo que Hicimos}
 \begin{itemize}
     \item Encoder dual U-Net: RGB + mapa de bordes Canny
@@ -482,7 +632,7 @@ U-Net (Fusión T.)      & \textbf{0.9532} & \textbf{0.9761} \\
 \end{alertblock}
 \end{frame}
 
-% ── Slide 25: Lo que logramos ─────────────────────────────────────────────────
+% ── Slide 31: Lo que logramos ─────────────────────────────────────────────────
 \begin{frame}{Conclusión: Lo que Logramos}
 \begin{itemize}
     \item \textbf{0.9530 IoU} — empatado con el mejor baseline
@@ -493,7 +643,7 @@ U-Net (Fusión T.)      & \textbf{0.9532} & \textbf{0.9761} \\
 \end{itemize}
 \end{frame}
 
-% ── Slide 23: Gracias ─────────────────────────────────────────────────────────
+% ── Slide 32: Gracias ─────────────────────────────────────────────────────────
 \begin{frame}{}
 \centering
 \vspace{2em}
