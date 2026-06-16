@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.3.22)  15 JUN 2026 19:35
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.3.22)  15 JUN 2026 21:18
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -834,7 +834,7 @@ Dictionary: translator-theorem-dictionary, Language: English
 LaTeX Info: Redefining \. on input line 20.
 LaTeX Info: Redefining \% on input line 20.
  (/Users/duque/Projects/Artificial-Intelligence/multimodal-cataract-seg/presentation/out/slides.nav)
-Overfull \vbox (44.55656pt too high) detected at line 33
+Overfull \vbox (44.55656pt too high) detected at line 35
  []
 
 [1
@@ -844,132 +844,136 @@ LaTeX Info: Redefining \. on input line 1.
 LaTeX Info: Redefining \% on input line 1.
 ) [2
 
-]
-LaTeX Font Info:    Trying to load font information for U+msa on input line 77.
+] [3
+
+{/usr/local/texlive/2026/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc}]
+LaTeX Font Info:    Trying to load font information for U+msa on input line 82.
  (/usr/local/texlive/2026/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 77.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 82.
  (/usr/local/texlive/2026/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-LaTeX Font Info:    Trying to load font information for OT1+mathkerncmss on input line 77.
+LaTeX Font Info:    Trying to load font information for OT1+mathkerncmss on input line 82.
  (/usr/local/texlive/2026/texmf-dist/tex/latex/sansmathaccent/ot1mathkerncmss.fd
 File: ot1mathkerncmss.fd 2020/01/31 Fontinst v1.933 font definitions for OT1/mathkerncmss.
-) [3
+)
+<../paper/figures/qualitative_predictions.pdf, id=65, 1396.29356pt x 642.24438pt>
+File: ../paper/figures/qualitative_predictions.pdf Graphic file (type pdf)
+<use ../paper/figures/qualitative_predictions.pdf>
+Package pdftex.def Info: ../paper/figures/qualitative_predictions.pdf  used on input line 82.
+(pdftex.def)             Requested size: 167.30147pt x 76.9484pt.
+ [4
 
-{/usr/local/texlive/2026/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc}]
-Overfull \hbox (21.99513pt too wide) detected at line 103
+ <../paper/figures/qualitative_predictions.pdf>] [5
+
+] [6
+
+] [7
+
+]
+Overfull \hbox (21.99513pt too wide) detected at line 189
 []\OT1/cmss/m/n/10.95 (\OT1/mathkerncmss/m/sl/10.95 Q\OML/cmm/m/it/10.95 ; \OT1/mathkerncmss/m/sl/10.95 K\OML/cmm/m/it/10.95 ; \OT1/mathkerncmss/m/sl/10.95 V\OT1/cmss/m/n/10.95 ) = []  [] \OT1/mathkerncmss/m/sl/10.95 V
  []
 
 
-Overfull \vbox (6.56015pt too high) detected at line 103
+Overfull \vbox (6.56015pt too high) detected at line 189
  []
 
-[4
+[8
 
-] [5
+] [9
 
-] [6
-
-]
-<../figures/iou_comparison.pdf, id=87, 498.2891pt x 280.57147pt>
-File: ../figures/iou_comparison.pdf Graphic file (type pdf)
-<use ../figures/iou_comparison.pdf>
-Package pdftex.def Info: ../figures/iou_comparison.pdf  used on input line 189.
-(pdftex.def)             Requested size: 105.16103pt x 59.21286pt.
- [7
-
- <../figures/iou_comparison.pdf>] [8
-
-]
-<../paper/figures/qualitative_predictions.pdf, id=144, 1396.29356pt x 642.24438pt>
-File: ../paper/figures/qualitative_predictions.pdf Graphic file (type pdf)
-<use ../paper/figures/qualitative_predictions.pdf>
-Package pdftex.def Info: ../paper/figures/qualitative_predictions.pdf  used on input line 228.
-(pdftex.def)             Requested size: 167.30147pt x 76.9484pt.
- [9
-
- <../paper/figures/qualitative_predictions.pdf>] [10
+] [10
 
 ] [11
 
 ] [12
 
-] [13
-
-] (../paper/figures/architecture.tikz) [14
+] (../paper/figures/architecture.tikz) [13
 
 ]
-Overfull \vbox (5.25014pt too high) detected at line 349
+Overfull \vbox (3.04176pt too high) detected at line 338
+ []
+
+[14
+
+]
+<../figures/canny_visualization.pdf, id=202, 833.47997pt x 428.5611pt>
+File: ../figures/canny_visualization.pdf Graphic file (type pdf)
+<use ../figures/canny_visualization.pdf>
+Package pdftex.def Info: ../figures/canny_visualization.pdf  used on input line 347.
+(pdftex.def)             Requested size: 278.83578pt x 143.36777pt.
+
+Overfull \vbox (4.12796pt too high) detected at line 347
  []
 
 [15
 
-] [16
+ <../figures/canny_visualization.pdf>] [16
 
 ]
-<../figures/canny_visualization.pdf, id=261, 833.47997pt x 428.5611pt>
-File: ../figures/canny_visualization.pdf Graphic file (type pdf)
-<use ../figures/canny_visualization.pdf>
-Package pdftex.def Info: ../figures/canny_visualization.pdf  used on input line 386.
-(pdftex.def)             Requested size: 278.83578pt x 143.36777pt.
+LaTeX Font Info:    Font shape `OT1/cmss/b/n' in size <10.95> not available
+(Font)              Font shape `OT1/cmss/bx/n' tried instead on input line 392.
+LaTeX Font Info:    Font shape `OT1/cmss/b/n' in size <8> not available
+(Font)              Font shape `OT1/cmss/bx/n' tried instead on input line 392.
+LaTeX Font Info:    Font shape `OT1/cmss/b/n' in size <6> not available
+(Font)              Font shape `OT1/cmss/bx/n' tried instead on input line 392.
 
-Overfull \vbox (4.12796pt too high) detected at line 386
+Overfull \hbox (2.26764pt too wide) detected at line 392
+[] \OT1/cmss/m/n/10.95 = []  []
  []
 
 [17
 
- <../figures/canny_visualization.pdf>] [18
+] [18
+
+] [19
 
 ]
-LaTeX Font Info:    Font shape `OT1/cmss/b/n' in size <10.95> not available
-(Font)              Font shape `OT1/cmss/bx/n' tried instead on input line 432.
-LaTeX Font Info:    Font shape `OT1/cmss/b/n' in size <8> not available
-(Font)              Font shape `OT1/cmss/bx/n' tried instead on input line 432.
-LaTeX Font Info:    Font shape `OT1/cmss/b/n' in size <6> not available
-(Font)              Font shape `OT1/cmss/bx/n' tried instead on input line 432.
-
-Overfull \hbox (2.26764pt too wide) detected at line 432
-[] \OT1/cmss/m/n/10.95 = []  []
- []
-
-[19
-
-] [20
-
-] [21
+LaTeX Font Info:    Font shape `OT1/cmss/b/n' in size <9> not available
+(Font)              Font shape `OT1/cmss/bx/n' tried instead on input line 480.
+LaTeX Font Info:    Font shape `OT1/cmss/b/n' in size <5> not available
+(Font)              Font shape `OT1/cmss/bx/n' tried instead on input line 480.
+ [20
 
 ]
 
-LaTeX Warning: Command \textdegree invalid in math mode on input line 508.
+LaTeX Warning: Command \textdegree invalid in math mode on input line 512.
 
 
-LaTeX Warning: Command \textdegree invalid in math mode on input line 508.
+LaTeX Warning: Command \textdegree invalid in math mode on input line 512.
 
 Missing character: There is no ° in font cmss10!
-[22
+[21
 
 ]
-Overfull \hbox (20.91983pt too wide) in paragraph at lines 554--554
-[] 
+Overfull \vbox (20.84734pt too high) detected at line 549
  []
 
-[23
+[22
 
-] [24
+] [23
 
-] [25
+]
+<../figures/iou_comparison.pdf, id=299, 498.2891pt x 280.57147pt>
+File: ../figures/iou_comparison.pdf Graphic file (type pdf)
+<use ../figures/iou_comparison.pdf>
+Package pdftex.def Info: ../figures/iou_comparison.pdf  used on input line 603.
+(pdftex.def)             Requested size: 105.16103pt x 59.21286pt.
+ [24
+
+ <../figures/iou_comparison.pdf>] [25
 
 ]
 <../paper/figures/iou_comparison.pdf, id=356, 498.2891pt x 280.57147pt>
 File: ../paper/figures/iou_comparison.pdf Graphic file (type pdf)
 <use ../paper/figures/iou_comparison.pdf>
-Package pdftex.def Info: ../paper/figures/iou_comparison.pdf  used on input line 601.
+Package pdftex.def Info: ../paper/figures/iou_comparison.pdf  used on input line 633.
 (pdftex.def)             Requested size: 298.75394pt x 168.22002pt.
 
-Overfull \vbox (13.58582pt too high) detected at line 601
+Overfull \vbox (13.58582pt too high) detected at line 633
  []
 
 [26
@@ -978,7 +982,7 @@ Overfull \vbox (13.58582pt too high) detected at line 601
 <../paper/figures/loss_curves.pdf, id=407, 1004.20985pt x 352.34511pt>
 File: ../paper/figures/loss_curves.pdf Graphic file (type pdf)
 <use ../paper/figures/loss_curves.pdf>
-Package pdftex.def Info: ../paper/figures/loss_curves.pdf  used on input line 610.
+Package pdftex.def Info: ../paper/figures/loss_curves.pdf  used on input line 642.
 (pdftex.def)             Requested size: 338.59023pt x 118.80112pt.
  [27
 
@@ -986,10 +990,10 @@ Package pdftex.def Info: ../paper/figures/loss_curves.pdf  used on input line 61
 <../paper/figures/val_iou_curves.pdf, id=459, 570.58984pt x 280.0751pt>
 File: ../paper/figures/val_iou_curves.pdf Graphic file (type pdf)
 <use ../paper/figures/val_iou_curves.pdf>
-Package pdftex.def Info: ../paper/figures/val_iou_curves.pdf  used on input line 619.
+Package pdftex.def Info: ../paper/figures/val_iou_curves.pdf  used on input line 651.
 (pdftex.def)             Requested size: 326.64055pt x 160.33678pt.
 
-Overfull \vbox (7.64702pt too high) detected at line 619
+Overfull \vbox (7.64702pt too high) detected at line 651
  []
 
 [28
@@ -997,10 +1001,10 @@ Overfull \vbox (7.64702pt too high) detected at line 619
  <../paper/figures/val_iou_curves.pdf>]
 File: ../paper/figures/qualitative_predictions.pdf Graphic file (type pdf)
 <use ../paper/figures/qualitative_predictions.pdf>
-Package pdftex.def Info: ../paper/figures/qualitative_predictions.pdf  used on input line 628.
+Package pdftex.def Info: ../paper/figures/qualitative_predictions.pdf  used on input line 660.
 (pdftex.def)             Requested size: 326.64055pt x 150.24146pt.
 
-Overfull \vbox (7.12221pt too high) detected at line 628
+Overfull \vbox (7.12221pt too high) detected at line 660
  []
 
 [29
@@ -1032,18 +1036,18 @@ LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
 Package rerunfilecheck Info: File `slides.out' has not changed.
-(rerunfilecheck)             Checksum: 697D149826FAF511BE98D4B8DB2DA11F;734.
+(rerunfilecheck)             Checksum: 446943496B88FF8DFD1CE2D2C96B6687;734.
  ) 
 Here is how much of TeX's memory you used:
- 28194 strings out of 467525
- 569301 string characters out of 5418982
- 977459 words of memory out of 5000000
- 56472 multiletter control sequences out of 15000+600000
- 644393 words of font info for 99 fonts, out of 8000000 for 9000
+ 28245 strings out of 467525
+ 570056 string characters out of 5418982
+ 979090 words of memory out of 5000000
+ 56523 multiletter control sequences out of 15000+600000
+ 644687 words of font info for 100 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  128i,13n,123p,1952b,1062s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmss10.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmss12.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmss8.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmss9.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmssbx10.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmssi10.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmssi8.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmssi9.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/public/cm-super/sfss1000.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/public/cm-super/sfss1095.pfb>
-Output written on /Users/duque/Projects/Artificial-Intelligence/multimodal-cataract-seg/presentation/out/slides.pdf (33 pages, 1098433 bytes).
+Output written on /Users/duque/Projects/Artificial-Intelligence/multimodal-cataract-seg/presentation/out/slides.pdf (33 pages, 1098107 bytes).
 PDF statistics:
  638 PDF objects out of 1000 (max. 8388607)
  307 compressed objects within 4 object streams

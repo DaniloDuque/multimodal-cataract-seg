@@ -1,6 +1,6 @@
 \babel@toc {spanish}{}\relax 
-\beamer@sectionintoc {1}{Fundamentos}{1}{0}{1}
-\beamer@sectionintoc {2}{Motivación}{1}{0}{2}
+\beamer@sectionintoc {1}{Motivación}{1}{0}{1}
+\beamer@sectionintoc {2}{Fundamentos}{1}{0}{2}
 \beamer@sectionintoc {3}{Trabajo Relacionado}{1}{0}{3}
 \beamer@sectionintoc {4}{Método Propuesto}{1}{0}{4}
 \beamer@sectionintoc {5}{Experimentos y Resultados}{1}{0}{5}

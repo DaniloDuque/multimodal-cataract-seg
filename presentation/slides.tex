@@ -19,29 +19,97 @@
 % ─────────────────────────────────────────────────────────────────────────────
 \begin{document}
 
-% ── Secciones (deben ir antes del TOC) ───────────────────────────────────────
-\section{Fundamentos}
+% ── Secciones ────────────────────────────────────────────────────────────────
 \section{Motivación}
+\section{Fundamentos}
 \section{Trabajo Relacionado}
 \section{Método Propuesto}
 \section{Experimentos y Resultados}
 \section{Conclusión}
 
-% ── Slide 1: Título ───────────────────────────────────────────────────────────
+% ══════════════════════════════════════════════════════════════════════════════
+%  Slide 1: Título
+% ══════════════════════════════════════════════════════════════════════════════
 \begin{frame}
 \titlepage
 \end{frame}
 
-% ── Slide 2: Agenda ───────────────────────────────────────────────────────────
+% ══════════════════════════════════════════════════════════════════════════════
+%  Slide 2: Agenda
+% ══════════════════════════════════════════════════════════════════════════════
 \begin{frame}{Agenda}
 \tableofcontents
 \end{frame}
 
 % ══════════════════════════════════════════════════════════════════════════════
-%  FUNDAMENTOS — Slides 3–7  (~5 min)
+%  MOTIVACIÓN — Slides 3–5
+%  (Primero el problema clínico, luego por qué es difícil, luego el enfoque)
 % ══════════════════════════════════════════════════════════════════════════════
 
-% ── Slide 3: ¿Qué es U-Net? ─────────────────────────────────────────────────
+% ── Slide 3: El problema clínico ─────────────────────────────────────────────
+\begin{frame}{El Problema: Cataratas}
+\begin{itemize}
+    \item Las cataratas afectan a más de \textbf{100 millones de personas} en el mundo
+    \item Es la \textbf{principal causa de ceguera prevenible}
+    \item El diagnóstico requiere identificar estructuras del segmento anterior:
+    \begin{itemize}
+        \item Córnea, pupila, cristalino
+    \end{itemize}
+\end{itemize}
+\vspace{0.5em}
+\begin{block}{Necesidad clínica}
+Segmentar automáticamente estas estructuras para graduación, planificación quirúrgica y guía intraoperatoria.
+\end{block}
+\end{frame}
+
+% ── Slide 4: Por qué RGB no es suficiente ────────────────────────────────────
+\begin{frame}{¿Por qué RGB solo no es suficiente?}
+\begin{columns}
+\column{0.55\textwidth}
+\begin{itemize}
+    \item La opacificación del cristalino genera \textbf{bajo contraste de color}
+    \item Las lámparas de hendidura producen \textbf{artefactos de iluminación}
+    \item Los modelos unimodales fallan precisamente cuando el paciente está más grave
+\end{itemize}
+\vspace{0.5em}
+\begin{alertblock}{Problema clave}
+El color solo no alcanza para delinear los bordes del cristalino opacificado.
+\end{alertblock}
+\column{0.42\textwidth}
+\centering
+\includegraphics[width=\textwidth]{../paper/figures/qualitative_predictions.pdf}
+\end{columns}
+\end{frame}
+
+% ── Slide 5: ¿Qué es segmentación multimodal? ────────────────────────────────
+\begin{frame}{¿Qué es Segmentación Multimodal?}
+\begin{block}{Idea central}
+Usar \textbf{múltiples representaciones} de la misma escena y \textbf{fusionarlas} para que el modelo vea más de lo que cualquier vista individual puede capturar.
+\end{block}
+\vspace{0.6em}
+\begin{columns}
+\column{0.48\textwidth}
+\textbf{Multimodal clásico} (sensores distintos):
+\begin{itemize}
+    \item MRI T1 + T2 + FLAIR para tumores cerebrales
+    \item RGB + profundidad para escenas 3D
+\end{itemize}
+\column{0.48\textwidth}
+\textbf{Nuestro enfoque} (misma imagen, dos vistas):
+\begin{itemize}
+    \item Imagen RGB $\rightarrow$ features fotométricas
+    \item Mapa de bordes Canny $\rightarrow$ features geométricas
+    \item Espacios de features heterogéneos $\Rightarrow$ fusión multimodal
+\end{itemize}
+\end{columns}
+\end{frame}
+
+% ══════════════════════════════════════════════════════════════════════════════
+%  FUNDAMENTOS — Slides 6–10
+%  (Ahora el audience sabe POR QUÉ necesita entender estas herramientas)
+% ══════════════════════════════════════════════════════════════════════════════
+
+% ── Slide 6: ¿Qué es U-Net? ──────────────────────────────────────────────────
 \begin{frame}{¿Qué es U-Net?}
 \begin{columns}[T]
 \column{0.58\textwidth}
@@ -76,7 +144,25 @@ Usamos U-Net como backbone porque sus skip connections preservan los bordes anat
 \end{block}
 \end{frame}
 
-% ── Slide 4: ¿Qué es Atención? ──────────────────────────────────────────────
+% ── Slide 7: ¿Qué es Canny? ──────────────────────────────────────────────────
+\begin{frame}{¿Qué es el detector de bordes Canny?}
+Transforma una imagen a color en un \textbf{mapa de bordes}.
+\begin{enumerate}
+    \item \textbf{Suavizar}: filtro Gaussiano para eliminar ruido.
+    \item \textbf{Gradiente}: en cada píxel, qué tan rápido cambia el brillo.
+    \item \textbf{Adelgazar}: solo los máximos locales en la dirección del gradiente.
+    \item \textbf{Conectar bordes} con dos umbrales ($t_1=50$, $t_2=150$):
+    \begin{itemize}
+        \item $> t_2$: borde fuerte (se queda)
+        \item $< t_1$: se descarta
+        \item Entre $t_1$ y $t_2$: solo si conecta a un borde fuerte
+    \end{itemize}
+\end{enumerate}
+\vspace{0.3em}
+{\small Dos umbrales producen bordes \textbf{limpios y conectados}: eliminan ruido pero mantienen contornos relevantes.}
+\end{frame}
+
+% ── Slide 8: ¿Qué es Atención? ───────────────────────────────────────────────
 \begin{frame}{¿Qué es Atención (Attention)?}
 \begin{columns}[T]
 \column{0.55\textwidth}
@@ -102,7 +188,7 @@ Como buscar en Google: tu \textbf{consulta} (Q) se compara con \textbf{claves} (
 \end{block}
 \end{frame}
 
-% ── Slide 5: Self-Attention vs Cross-Attention ──────────────────────────────
+% ── Slide 9: Self-Attention vs Cross-Attention ───────────────────────────────
 \begin{frame}{Self-Attention vs Cross-Attention}
 \begin{columns}[T]
 \column{0.48\textwidth}
@@ -141,114 +227,9 @@ El encoder RGB genera \textbf{Q}, el encoder de bordes genera \textbf{K y V}. Lo
 \end{alertblock}
 \end{frame}
 
-% ── Slide 6: ¿Qué es Canny? ─────────────────────────────────────────────────
-\begin{frame}{¿Qué es el detector de bordes Canny?}
-Transforma una imagen a color en un \textbf{mapa de bordes}.
-\begin{enumerate}
-    \item \textbf{Suavizar}: filtro Gaussiano para eliminar ruido.
-    \item \textbf{Gradiente}: en cada píxel, qué tan rápido cambia el brillo.
-    \item \textbf{Adelgazar}: solo los máximos locales en la dirección del gradiente.
-    \item \textbf{Conectar bordes} con dos umbrales ($t_1=50$, $t_2=150$):
-    \begin{itemize}
-        \item $> t_2$: borde fuerte (se queda)
-        \item $< t_1$: se descarta
-        \item Entre $t_1$ y $t_2$: solo si conecta a un borde fuerte
-    \end{itemize}
-\end{enumerate}
-\vspace{0.3em}
-{\small Dos umbrales producen bordes \textbf{limpios y conectados}: eliminan ruido pero mantienen contornos relevantes.}
-\end{frame}
-
-% ── Slide 7: ¿Qué es IoU y Dice? ─────────────────────────────────────────────
-\begin{frame}{Métricas: IoU y Dice}
-\begin{columns}[T]
-\column{0.48\textwidth}
-\centering
-\textbf{IoU (Intersection over Union)}
-\begin{equation*}
-\text{IoU} = \frac{|\hat{M} \cap M|}{|\hat{M} \cup M|}
-\end{equation*}
-{\small Solapamiento / área total. 1 = perfecto, 0 = nada.}
-
-\includegraphics[width=0.55\textwidth]{../figures/iou_comparison.pdf}
-
-\column{0.48\textwidth}
-\centering
-\textbf{Dice}
-\begin{equation*}
-\text{Dice} = \frac{2|\hat{M} \cap M|}{|\hat{M}| + |M|}
-\end{equation*}
-{\small Pesa más el solapamiento. Equivalente a F1.}
-\vspace{0.5em}
-
-\begin{block}{Relación}
-IoU es más \textbf{conservador}: $\text{IoU} \leq \text{Dice}$. Si IoU=0.95, Dice$\approx$0.974.
-Ambos penalizan FP y FN.
-\end{block}
-\end{columns}
-\end{frame}
-
 % ══════════════════════════════════════════════════════════════════════════════
-%  CALEB — Slides 8–13  (~7 min)
+%  TRABAJO RELACIONADO — Slides 10–12
 % ══════════════════════════════════════════════════════════════════════════════
-
-% ── Slide 8: El problema clínico ─────────────────────────────────────────────
-\begin{frame}{El Problema: Cataratas}
-\begin{itemize}
-    \item Las cataratas afectan a más de \textbf{100 millones de personas} en el mundo
-    \item Es la \textbf{principal causa de ceguera prevenible}
-    \item El diagnóstico requiere identificar estructuras del segmento anterior:
-    \begin{itemize}
-        \item Córnea, pupila, cristalino
-    \end{itemize}
-\end{itemize}
-\vspace{0.5em}
-\begin{block}{Necesidad clínica}
-Segmentar automáticamente estas estructuras para graduación, planificación quirúrgica y guía intraoperatoria.
-\end{block}
-\end{frame}
-
-% ── Slide 9: Por qué RGB no es suficiente ────────────────────────────────────
-\begin{frame}{¿Por qué RGB solo no es suficiente?}
-\begin{columns}
-\column{0.55\textwidth}
-\begin{itemize}
-    \item La opacificación del cristalino genera \textbf{bajo contraste de color}
-    \item Las lámparas de hendidura producen \textbf{artefactos de iluminación}
-    \item Los modelos unimodales fallan precisamente cuando el paciente está más grave
-\end{itemize}
-\vspace{0.5em}
-\begin{alertblock}{Problema clave}
-El color solo no alcanza para delinear los bordes del cristalino opacificado.
-\end{alertblock}
-\column{0.42\textwidth}
-\centering
-\includegraphics[width=\textwidth]{../paper/figures/qualitative_predictions.pdf}
-\end{columns}
-\end{frame}
-
-% ── Slide 10: ¿Qué es segmentación multimodal? ────────────────────────────────
-\begin{frame}{¿Qué es Segmentación Multimodal?}
-\begin{block}{Idea central}
-Usar \textbf{múltiples representaciones} de la misma escena y \textbf{fusionarlas} para que el modelo vea más de lo que cualquier vista individual puede capturar.
-\end{block}
-\vspace{0.6em}
-\begin{columns}
-\column{0.48\textwidth}
-\textbf{Multimodal clásico} (sensores distintos):
-\begin{itemize}
-    \item MRI T1 + T2 + FLAIR para tumores cerebrales
-    \item RGB + profundidad para escenas 3D
-\end{itemize}
-\column{0.48\textwidth}
-\textbf{Nuestro enfoque} (misma imagen, dos vistas):
-\begin{itemize}
-    \item Imagen RGB $\rightarrow$ features fotométricas
-    \item Mapa de bordes Canny $\rightarrow$ features geométricas
-    \item Espacios de features heterogéneos $\Rightarrow$ fusión multimodal
-\end{itemize}
-\end{columns}
-\end{frame}
 
 % ── Slide 11: Trabajo Relacionado — Backbone ──────────────────────────────────
 \begin{frame}{Trabajo Relacionado: Segmentación Médica}
@@ -311,7 +292,7 @@ Usar \textbf{múltiples representaciones} de la misma escena y \textbf{fusionarl
 \end{frame}
 
 % ══════════════════════════════════════════════════════════════════════════════
-%  DESIREÉ — Slides 14–22  (~7 min)
+%  MÉTODO PROPUESTO — Slides 14–22
 % ══════════════════════════════════════════════════════════════════════════════
 
 % ── Slide 14: Vista general de la arquitectura ────────────────────────────────
@@ -327,28 +308,7 @@ Usar \textbf{múltiples representaciones} de la misma escena y \textbf{fusionarl
 \end{columns}
 \end{frame}
 
-% ── Slide 15: Flujo completo del modelo ──────────────────────────────────────
-\begin{frame}{Flujo Completo del Modelo}
-\footnotesize
-\textbf{1. Entrada.} Una imagen RGB $512^2$ alimenta el \textcolor{blue!80}{Encoder RGB}. La misma pasa por Canny ($t_1{=}50$, $t_2{=}150$) y el mapa de bordes alimenta el \textcolor{red!80}{Encoder de bordes}. Ambos son ResNet-34 sin pesos compartidos.
-
-\medskip
-\textbf{2. Encoders.} Cada uno reduce resolución y aumenta canales en 5 etapas: $64{\to}64{\to}128{\to}256{\to}512$ canales, desde $256^2$ hasta $16^2$ en el cuello de botella.
-
-\medskip
-\textbf{3. Cross-Attention.} En stage 4 ($32^2$, 256ch) y bottleneck ($16^2$, 512ch): RGB $\to$ \textbf{Q}, bordes $\to$ \textbf{K,V}. Cada uno tiene un gate $\alpha{=}\sigma(\theta)$ con $\theta{=}{-}4$, para que el modelo aprenda a usar bordes gradualmente.
-
-\medskip
-\textbf{4. Decoder.} Parte del bottleneck fusionado y expande: $512{\to}256{\to}128{\to}64$ canales hasta la máscara $512^2$.
-
-\medskip
-\textbf{5. Skip connections duales.} En cada nivel del decoder, la feature RGB y la de bordes se concatenan por canales y pasan por una Conv $1\times1$ que proyecta al canal original.
-
-\medskip
-\textbf{6. Salida.} Máscara binaria $512^2$ con sigmoid.
-\end{frame}
-
-% ── Slide 16: Representaciones de entrada ────────────────────────────────────
+% ── Slide 15: Representaciones de entrada ────────────────────────────────────
 \begin{frame}{Representaciones de Entrada}
 \begin{columns}[T]
 \column{0.5\textwidth}
@@ -361,22 +321,23 @@ Usar \textbf{múltiples representaciones} de la misma escena y \textbf{fusionarl
 \vspace{0.3em}
 \textbf{Flujo de bordes}
 \begin{itemize}
-    \item Filtro Canny: $t_1 = 50$, $t_2 = 150$
-    \item Aplicado a escala de grises, replicado a 3 canales
+    \item Filtro Canny aplicado a escala de grises
+    \item Resultado replicado a 3 canales
     \item Captura \textbf{límites geométricos}
-    \item Recalculado luego de augmentaciones
+    \item \textbf{Recalculado} tras cada augmentación geométrica
 \end{itemize}
 \column{0.46\textwidth}
-\begin{block}{¿Por qué Canny?}
-La estructura de bordes explícita hace detectable el contorno del cristalino incluso cuando el contraste de color es bajo.
+\begin{block}{La clave de la dualidad}
+RGB y bordes son \textbf{espacios de features heterogéneos}: uno codifica apariencia, el otro estructura. Una sola imagen produce dos representaciones complementarias.
 \end{block}
 \vspace{0.3em}
-\centering
-{\small Dos espacios de features heterogéneos de \textbf{una sola imagen} $\rightarrow$ fusión multimodal}
+\begin{alertblock}{¿Por qué recalcular Canny?}
+Si la imagen se rota o voltea durante augmentación y el mapa de bordes no, el modelo aprende una inconsistencia geométrica.
+\end{alertblock}
 \end{columns}
 \end{frame}
 
-% ── Slide 17: Visualización Canny ────────────────────────────────────────────
+% ── Slide 16: Visualización Canny ────────────────────────────────────────────
 \begin{frame}{¿Cómo se ve el mapa de bordes Canny?}
 \centering
 \includegraphics[width=0.7\textwidth]{../figures/canny_visualization.pdf}
@@ -385,7 +346,7 @@ La estructura de bordes explícita hace detectable el contorno del cristalino in
 {\small Los bordes del cristalino y la córnea son geométricamente explícitos incluso cuando el contraste de color es bajo.}
 \end{frame}
 
-% ── Slide 18: Encoders duales ─────────────────────────────────────────────────
+% ── Slide 17: Encoders duales ─────────────────────────────────────────────────
 \begin{frame}{Encoders Duales}
 \begin{itemize}
     \item Dos encoders U-Net \textbf{independientes} — misma arquitectura ResNet-34, \textbf{sin pesos compartidos}
@@ -405,7 +366,7 @@ Los pesos separados permiten que cada encoder aprenda representaciones especiali
 \end{block}
 \end{frame}
 
-% ── Slide 19: Módulo de Cross-Attention ──────────────────────────────────────
+% ── Slide 18: Módulo de Cross-Attention ──────────────────────────────────────
 \begin{frame}{Módulo de Cross-Attention}
 \begin{columns}
 \column{0.55\textwidth}
@@ -416,22 +377,21 @@ Reshape: $(B, C, H, W) \rightarrow (B,\, HW,\, C)$
 \tilde{\mathbf{F}}_A = \text{LN}\!\left(\alpha \cdot \text{MHA}(\underbrace{Q{=}\mathbf{F}_A}_{\text{RGB}},\; \underbrace{K{=}V{=}\mathbf{F}_B}_{\text{bordes}}) + \mathbf{F}_A\right)
 \end{equation*}
 
-\vspace{0.3em}
+\vspace{0.4em}
 \begin{itemize}
-    \item \textbf{Q} viene del encoder RGB
-    \item \textbf{K, V} vienen del encoder de bordes
-    \item El encoder RGB \textbf{consulta} los features de bordes
-    \item 8 cabezas de atención
+    \item \textbf{Conexión residual} ($+ \mathbf{F}_A$): si la atención no ayuda, el flujo RGB pasa intacto
+    \item \textbf{Layer Norm} estabiliza el entrenamiento
+    \item \textbf{8 cabezas} permiten atender múltiples tipos de bordes en paralelo
 \end{itemize}
 
 \column{0.42\textwidth}
 \begin{block}{¿Qué logra esto?}
-Enriquece la representación fotométrica con información estructural geométrica antes del decodificador.
+Los features RGB \textit{preguntan} al mapa de bordes dónde están los contornos anatómicos y enriquecen su representación antes del decoder.
 \end{block}
 \end{columns}
 \end{frame}
 
-% ── Slide 20: Gate aprendible ─────────────────────────────────────────────────
+% ── Slide 19: Gate aprendible ─────────────────────────────────────────────────
 \begin{frame}{Gate Escalar Aprendible}
 \begin{columns}
 \column{0.55\textwidth}
@@ -456,7 +416,7 @@ Early Fusion fuerza ambas modalidades desde la época 1. El gate es selectivo.
 \end{columns}
 \end{frame}
 
-% ── Slide 21: Fusión multi-escala ─────────────────────────────────────────────
+% ── Slide 20: Fusión multi-escala ─────────────────────────────────────────────
 \begin{frame}{Fusión Multi-Escala}
 \textbf{Dos instancias de cross-attention:}
 \vspace{0.3em}
@@ -475,7 +435,51 @@ Los cues geométricos se propagan por \textbf{todo el camino de expansión}, no 
 \end{block}
 \end{frame}
 
-% ── Slide 22: Entrenamiento ───────────────────────────────────────────────────
+% ── Slide 21: Flujo completo del modelo ──────────────────────────────────────
+\begin{frame}{Flujo Completo del Modelo}
+\centering
+\begin{tikzpicture}[font=\small, node distance=0.45cm and 0.6cm,
+    box/.style={draw, rounded corners, minimum width=2.1cm, minimum height=0.55cm, align=center, font=\footnotesize},
+    arr/.style={-{Stealth}, thick}]
+
+    % Top stream: RGB
+    \node[box, fill=blue!15] (rgb)    {Imagen RGB\\$512^2$};
+    \node[box, fill=blue!15, right=of rgb] (encA)  {Encoder RGB\\ResNet-34};
+    \node[box, fill=orange!20, right=of encA] (ca)    {Cross-\\Attention $\times2$};
+    \node[box, fill=gray!15, right=of ca] (dec)   {Decoder};
+    \node[box, fill=green!20, right=of dec] (out)   {Máscara\\$512^2$};
+
+    % Bottom stream: Edges
+    \node[box, fill=red!15, below=1.1cm of rgb] (canny) {Canny\\$t_1{=}50,\,t_2{=}150$};
+    \node[box, fill=red!15, right=of canny] (encB)  {Encoder Bordes\\ResNet-34};
+
+    % Arrows top stream
+    \draw[arr] (rgb)  -- (encA);
+    \draw[arr] (encA) -- (ca);
+    \draw[arr] (ca)   -- (dec);
+    \draw[arr] (dec)  -- (out);
+
+    % Arrow bottom stream
+    \draw[arr] (rgb.south) -- (canny.north);
+    \draw[arr] (canny) -- (encB);
+
+    % Cross connections
+    \draw[arr, red!60, dashed] (encB.north east) -- (ca.south west)
+        node[midway, right, font=\tiny] {K, V};
+    \draw[arr, blue!60, dashed] (encA.south) -- ++(0,-0.25) -| (ca.south)
+        node[near start, below, font=\tiny] {Q};
+
+    % Skip label
+    \draw[arr, purple!60, dashed] (encB.east) -- ++(0.3,0) |- (dec.south)
+        node[near end, right, font=\tiny] {skips};
+
+\end{tikzpicture}
+\vspace{0.5em}
+
+{\small Ambos encoders comparten arquitectura (ResNet-34) pero \textbf{no pesos}. El decoder recibe el bottleneck fusionado más skips de \textbf{ambos} encoders.}
+\end{frame}
+
+% ── Slide 22: Configuración de entrenamiento ─────────────────────────────────
 \begin{frame}{Configuración de Entrenamiento}
 \begin{columns}
 \column{0.48\textwidth}
@@ -508,7 +512,7 @@ lr $= 10^{-4}$, weight decay $= 10^{-2}$
 \end{frame}
 
 % ══════════════════════════════════════════════════════════════════════════════
-%  DANILO — Slides 23–29  (~6 min)
+%  EXPERIMENTOS Y RESULTADOS — Slides 23–29
 % ══════════════════════════════════════════════════════════════════════════════
 
 % ── Slide 23: Dataset ─────────────────────────────────────────────────────────
@@ -518,7 +522,8 @@ lr $= 10^{-4}$, weight decay $= 10^{-2}$
 \begin{itemize}
     \item \textbf{Fuente:} Roboflow Universe (Muhammad Risma, 2023)
     \item Imágenes de segmento anterior con máscaras de píxeles
-    \item Estructuras: córnea, pupila, cristalino
+    \item Estructuras etiquetadas: córnea, pupila, cristalino
+    \item \textbf{300 imágenes} en total
 \end{itemize}
 \vspace{0.4em}
 \textbf{Partición estratificada 70/15/15:}
@@ -535,39 +540,66 @@ Validación    & 45  \\
 \end{center}
 
 \column{0.46\textwidth}
-\textbf{4 modelos comparados:}
+\begin{block}{Reto del dataset}
+300 imágenes es pequeño para segmentación médica. Los modelos fundacionales como MedSAM requieren órdenes de magnitud más datos — de ahí la apuesta por un modelo liviano sin preentrenamiento.
+\end{block}
 \vspace{0.3em}
-\begin{tabular}{ll}
-\hline
-Modelo & Entrada \\
-\hline
-U-Net (RGB) & Solo RGB \\
-U-Net (Bordes) & Solo bordes \\
-U-Net (Fusión T.) & RGB+bordes concat. \\
-\textbf{Propuesto} & Encoder dual + attn \\
-\hline
-\end{tabular}
-\vspace{0.3em}
-
-{\small Mismo backbone, optimizador y schedule para comparación justa.}
+{\small Augmentación geométrica y fotométrica para mitigar el tamaño reducido.}
 \end{columns}
 \end{frame}
 
-% ── Slide 24: Métricas ────────────────────────────────────────────────────────
-\begin{frame}{Métricas de Evaluación}
+% ── Slide 24: Diseño experimental ────────────────────────────────────────────
+\begin{frame}{Diseño Experimental: ¿Qué Comparamos?}
+\begin{columns}[T]
+\column{0.52\textwidth}
+Cuatro modelos con \textbf{mismo backbone, optimizador y schedule}:
+\vspace{0.3em}
 \begin{itemize}
-    \item \textbf{IoU (Intersection over Union)} — métrica primaria
-    \begin{equation*}
-        \text{IoU} = \frac{|\hat{M} \cap M|}{|\hat{M} \cup M|}
-    \end{equation*}
-    Penaliza tanto falsos positivos como falsos negativos
-    \vspace{0.4em}
-    \item \textbf{Dice / F1} — métrica secundaria
-    \begin{equation*}
-        \text{Dice} = \frac{2|\hat{M} \cap M|}{|\hat{M}| + |M|}
-    \end{equation*}
-    Equivalente a F1 en segmentación binaria
+    \item \textbf{U-Net RGB} — baseline unimodal
+    \item \textbf{U-Net Bordes} — Canny solo, sin color
+    \item \textbf{Fusión Temprana} — concatenación de canales en la entrada
+    \item \textbf{Propuesto} — encoder dual + cross-attention
 \end{itemize}
+\vspace{0.3em}
+{\small La comparación es una \textbf{ablación implícita}: cada modelo aisla la contribución de una decisión de diseño.}
+
+\column{0.44\textwidth}
+\begin{block}{Pregunta de investigación}
+¿Agrega valor la fusión por cross-attention respecto a simplemente concatenar las modalidades en la entrada?
+\end{block}
+\vspace{0.3em}
+\begin{alertblock}{Limitación}
+Sin ablación formal del gate $\alpha$ ni de las skip connections duales por separado.
+\end{alertblock}
+\end{columns}
+\end{frame}
+
+% ── Slide 25: Métricas de Evaluación ─────────────────────────────────────────
+\begin{frame}{Métricas de Evaluación}
+\begin{columns}[T]
+\column{0.48\textwidth}
+\textbf{IoU} — métrica primaria
+\begin{equation*}
+    \text{IoU} = \frac{|\hat{M} \cap M|}{|\hat{M} \cup M|}
+\end{equation*}
+{\small Solapamiento / área total. Penaliza FP y FN.
+Reportamos el promedio sobre las 45 imágenes del test set.}
+
+\includegraphics[width=0.55\textwidth]{../figures/iou_comparison.pdf}
+
+\column{0.48\textwidth}
+\textbf{Dice / F1} — métrica secundaria
+\begin{equation*}
+    \text{Dice} = \frac{2|\hat{M} \cap M|}{|\hat{M}| + |M|}
+\end{equation*}
+{\small Equivalente a F1. Más sensible a solapamientos parciales que IoU.}
+\vspace{0.4em}
+
+\begin{block}{Relación}
+IoU es más \textbf{conservador}: $\text{IoU} \leq \text{Dice}$.\\
+Si IoU=0.95, Dice$\approx$0.974.
+\end{block}
+\end{columns}
 \end{frame}
 
 % ── Slide 25: Resultados cuantitativos ───────────────────────────────────────
@@ -627,6 +659,10 @@ U-Net (Fusión T.)      & \textbf{0.9532} & \textbf{0.9761} \\
 Bordes solos: contornos más gruesos y ruidosos. Los modelos RGB: máscaras visualmente similares.}
 \end{frame}
 
+% ══════════════════════════════════════════════════════════════════════════════
+%  CONCLUSIÓN — Slides 30–33
+% ══════════════════════════════════════════════════════════════════════════════
+
 % ── Slide 30: Conclusión — título ────────────────────────────────────────────
 \begin{frame}{Conclusión}
 \centering
@@ -647,8 +683,6 @@ Bordes solos: contornos más gruesos y ruidosos. Los modelos RGB: máscaras visu
 \begin{alertblock}{Limitaciones}
 \begin{itemize}
     \item Test set de 45 imágenes — diferencias dentro del ruido estadístico
-    \item Umbrales Canny fijos
-    \item Sin tabla de ablación
 \end{itemize}
 \end{alertblock}
 \end{frame}
